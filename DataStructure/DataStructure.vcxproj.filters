@@ -13,6 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\Vector">
+      <UniqueIdentifier>{1e0fef4c-6fa0-4483-836e-dfd5d9073775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Trie">
+      <UniqueIdentifier>{e1a8e2bd-9273-4747-af3d-6e8885afe96f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Trie\Test">
+      <UniqueIdentifier>{fbd8e177-0ae8-492c-a614-005558354bcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Deque">
+      <UniqueIdentifier>{1348384a-78a2-4b7b-9378-513d9a115116}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Algorithm">
+      <UniqueIdentifier>{0209b2f8-5781-4830-abff-08dc7d565c1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\List">
+      <UniqueIdentifier>{89aae9dd-d629-41c2-ac47-e394ce7d4ccf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -24,6 +42,24 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>头文件\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Trie.h">
+      <Filter>头文件\Trie</Filter>
+    </ClInclude>
+    <ClInclude Include="Deque.h">
+      <Filter>头文件\Deque</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Algorithm.h">
+      <Filter>头文件\Algorithm</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>头文件\List</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -31,6 +67,18 @@
     </ClCompile>
     <ClCompile Include="DataStructure.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GenData.cpp">
+      <Filter>头文件\Trie\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="stlset.cpp">
+      <Filter>头文件\Trie\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="trie.cpp">
+      <Filter>头文件\Trie\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test.cpp">
+      <Filter>头文件\Deque</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
