@@ -31,6 +31,12 @@
     <Filter Include="头文件\List">
       <UniqueIdentifier>{89aae9dd-d629-41c2-ac47-e394ce7d4ccf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Test">
+      <UniqueIdentifier>{5652be9d-9ac1-4065-b092-777ccd0d9566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Map">
+      <UniqueIdentifier>{b17fa315-0fb8-46aa-901c-8ad8fb624ea6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -60,6 +66,9 @@
     <ClInclude Include="List.h">
       <Filter>头文件\List</Filter>
     </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>头文件\Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -79,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="Test.cpp">
       <Filter>头文件\Deque</Filter>
+    </ClCompile>
+    <ClCompile Include="SequenceContainer.cpp">
+      <Filter>头文件\Test</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
