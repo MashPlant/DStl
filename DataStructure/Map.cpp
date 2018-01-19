@@ -22,25 +22,37 @@ void test()
 {
 	M m;
 	clock_t beg = clock();
-	for (int i=0;i<maxn;++i)
+	for (int i = 0; i<maxn; ++i)
 		m.insert({ i, 2 * i + 1 });
-	for (int i = 0; i < maxn/2; ++i)
+	for (int i = 0; i < maxn / 2; ++i)
 		m[i + 1] = m[i];
-	for (int i = 0; i < maxn/2; ++i)
+	for (int i = 0; i < maxn / 2; ++i)
 		m.erase(i);
 	cout << clock() - beg << endl;
 	cout << m.size() << endl;
-	//cout << m[6e4] << endl;
 }
-int main()
-{	
-	int a[5];
-	for (int i = 0; i < 5; ++i)
-		a[i] = i;
-	do
+/*int main()
+{
 	{
-		print(a);
-	} while (ds::next_permutation(a, a + 5));
-	getchar();
-}
+		Map<int, int> m;
+		for (int i = 0; i < 1e5; ++i)
+			m.insert(i, 2 * i + 1);
+		{
+			cout << "hit to construct m1" << endl;
+			getchar();
+			auto m1 = m;
+			cout << "hit to construct m2" << endl;
+			getchar();
+			auto m2 = std::move(m1);
+			cout << "hit to construct m3" << endl;
+			getchar();
+			auto m3(m2);
+			cout << "hit to destruct m123" << endl;
+			getchar();
+		}
 
+
+		getchar();
+	}
+
+}*/

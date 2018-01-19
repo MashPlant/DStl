@@ -1,11 +1,9 @@
 #pragma once
 #include <iostream>
-#include "List.h"
 
 namespace ds
 {
-	//链表辅助红黑树，O(1)迭代器前驱/后继
-	template<typename K, typename V>
+	template<typename K, typename V,bool LinkWithList = false>
 	class Map
 	{
 	public:
@@ -19,7 +17,9 @@ namespace ds
 		typedef value_type &reference;
 		typedef const value_type &const_reference;
 
+		typedef std::function<mapped_type()> DefaultValue;
 		struct Node;
+		class const_iterator;
 		class iterator
 		{
 		public:
@@ -34,13 +34,16 @@ namespace ds
 			typedef value_type &reference;
 			typedef const value_type &const_reference;
 		private:
-			Node *self;
+			Node *self_;
+			Map *container_;
 		public:
-			reference operator*() const{ return self->value; }
+			friend Map;
+			friend const_iterator;
+			reference operator*() const { return self_->value; }
 			pointer operator->()const { return &(operator*()); }
 			iterator& operator++()
 			{
-				self = self->next(); //前驱后继与Map::Node的left和right无任何关系，完全由链表决定
+				self_ = container_->nextNode(self_);
 				return *this;
 			}
 			iterator operator++(int)
@@ -51,7 +54,7 @@ namespace ds
 			}
 			iterator& operator--()
 			{
-				self = self->prev();
+				self_ = container_->prevNode(self_);
 				return *this;
 			}
 			iterator operator--(int)
@@ -60,11 +63,42 @@ namespace ds
 				--*this;
 				return tmp;
 			}
-			iterator prev()const { return iterator(self->prev()); }
-			iterator next()const { return iterator(self->next()); }
-			bool operator==(iterator rhs) const { return self == rhs.self; }
-			bool operator!=(iterator rhs) const { return !(*this == rhs); }
-			explicit iterator(Node *n) :self(n) {}
+			iterator prev()const { return iterator(container_->prevNode(self_),container_); }
+			iterator next()const { return iterator(container_->nextNode(self_),container_); }
+			bool operator==(const_iterator rhs) const { return self_ == rhs.self_; }
+			bool operator!=(const_iterator rhs) const { return !(*this == rhs); }
+			iterator(Node *n,Map *m) :self_(n),container_(m) {}
+		};
+		class const_iterator
+		{
+		public:
+			typedef std::bidirectional_iterator_tag iterator_category;
+			typedef K key_type;
+			typedef V mapped_type;
+			typedef int size_type;
+			typedef int difference_type;
+			typedef std::pair<const K, const V> value_type;
+			typedef value_type *pointer;
+			typedef const value_type *const_pointer;
+			typedef value_type &reference;
+			typedef const value_type &const_reference;
+		private:
+			Node *self_;
+			Map *container_;
+		public:
+			friend Map;
+			reference operator*() const { return self_->value; }
+			pointer operator->()const { return &(operator*()); }
+			const_iterator& operator++() { self_ = container_->nextNode(self_); return *this; }
+			const_iterator operator++(int) { const_iterator tmp = *this; ++*this; return tmp; }
+			const_iterator& operator--() { self_ = container_->prevNode(self_); return *this; }
+			const_iterator operator--(int) { const_iterator tmp = *this; -*this; return tmp; }
+			const_iterator prev()const { return const_iterator(container_->prevNode(self_), container_); }
+			const_iterator next()const { return const_iterator(container_->nextNode(self_), container_); }
+			bool operator==(const_iterator rhs) const { return self_ == rhs.self_; }
+			bool operator!=(const_iterator rhs) const { return !(*this == rhs); }
+			const_iterator(Node *n, Map *m) :self_(n), container_(m) {}
+			const_iterator(iterator it) :self_(it.self_), container_(it.container_) {}
 		};
 	private:
 		const static bool B = false;
@@ -73,35 +107,29 @@ namespace ds
 		struct Node
 		{
 			value_type value;
-			int sz = 0;
+			int size = 0;
 			Node *left = nullptr;
 			Node *right = nullptr;
 			Node *p = nullptr;
 			bool color = B;
-			ListIter self;
-
-			Node *prev()const { return *(self.prev()); }
-			Node *next()const { return *(self.next()); }
 			const K &key()const { return value.first; }
 			V &val() { return value.second; }
 			Node() = default;
-			Node(Node* p, Node* l, Node* r, bool c,value_type && vp) :value(vp),p(p), left(l), right(r), color(c), sz(1) {}
+			Node(Node* p, Node* l, Node* r, bool c, value_type && vp) :value(vp), p(p), left(l), right(r), color(c), size(1) {}
 		};
-		typedef std::pair<Node*, Node*> NodePair; // self,parent
-		Node* nil = new Node;
-		Node* root;
-		List<Node *> nodeList;
-
-		//这几个树上的旋转操作的函数不影响前驱后继关系
+		typedef std::pair<Node*, Node*> NodePair; // self_,parent
+		Node* nil_;
+		Node* root_;
+		DefaultValue defaultValue_;
 		void rotataRight(Node *x)
 		{
 			Node* y = x->left;
 			x->left = y->right;
-			if (y->right != nil)
+			if (y->right != nil_)
 				y->right->p = x;
 			y->p = x->p;
-			if (x->p == nil)
-				root = y;
+			if (x->p == nil_)
+				root_ = y;
 			else
 			{
 				if (x == x->p->left)
@@ -110,18 +138,18 @@ namespace ds
 			}
 			y->right = x;
 			x->p = y;
-			y->sz = x->sz;
-			x->sz = x->left->sz + x->right->sz + 1;
+			y->size = x->size;
+			x->size = x->left->size + x->right->size + 1;
 		}
 		void rotataLeft(Node *x)
 		{
 			Node* y = x->right;
 			x->right = y->left;
-			if (y->left != nil)
+			if (y->left != nil_)
 				y->left->p = x;
 			y->p = x->p;
-			if (x->p == nil)
-				root = y;
+			if (x->p == nil_)
+				root_ = y;
 			else
 			{
 				if (x == x->p->right)
@@ -130,8 +158,8 @@ namespace ds
 			}
 			y->left = x;
 			x->p = y;
-			y->sz = x->sz;
-			x->sz = x->left->sz + x->right->sz + 1;
+			y->size = x->size;
+			x->size = x->left->size + x->right->size + 1;
 		}
 		void putFixUp(Node *z)
 		{
@@ -180,11 +208,11 @@ namespace ds
 					}
 				}
 			}
-			root->color = B;
+			root_->color = B;
 		}
 		void delFixUp(Node *x)
 		{
-			while (x != root&&x->color == B)
+			while (x != root_&&x->color == B)
 			{
 				if (x == x->p->left)
 				{
@@ -215,7 +243,7 @@ namespace ds
 						x->p->color = B;
 						w->right->color = B;
 						rotataLeft(w->p);
-						x = root;
+						x = root_;
 					}
 				}
 				else
@@ -247,7 +275,7 @@ namespace ds
 						x->p->color = B;
 						w->left->color = B;
 						rotataRight(w->p);
-						x = root;
+						x = root_;
 					}
 				}
 			}
@@ -257,8 +285,8 @@ namespace ds
 		void transplant(Node *to, Node *from)
 		{
 			from->p = to->p;
-			if (to->p == nil)
-				root = from;
+			if (to->p == nil_)
+				root_ = from;
 			else
 			{
 				if (to == to->p->left)
@@ -268,20 +296,36 @@ namespace ds
 		}
 		Node* minChild(Node *x)
 		{
-			while (x->left != nil)
+			while (x->left != nil_)
 				x = x->left;
 			return x;
 		}
 		Node* maxChild(Node *x)
 		{
-			while (x->right != nil)
+			while (x->right != nil_)
 				x = x->right;
 			return x;
 		}
+		Node* nextNode(Node *x)
+		{
+			if (x->right != nil_)
+				return minChild(x->right);
+			while (x->p->right == x)
+				x = x->p;
+			return x->p;//x是最大节点时p为nil_
+		}
+		Node* prevNode(Node *x)
+		{
+			if (x->left != nil_)
+				return maxChild(x->left);
+			while (x->p->left == x)
+				x = x->p;
+			return x->p;//x是最小节点时p为nil_
+		}
 		NodePair findNode(const K& key)
 		{
-			Node *x = root, *p = nil;
-			while (x != nil)
+			Node *x = root_, *p = nil_;
+			while (x != nil_)
 			{
 				if (x->key() < key)
 					p = x, x = x->right;
@@ -293,45 +337,34 @@ namespace ds
 		}
 		Node* insert(Node *p, const K& key, const V& val)
 		{
-			Node *z = new Node(p, nil, nil, R,std::make_pair(key, val));
-			if (p == nil)
-			{
-				//nil并不是list的一部分，所以特判一下
-				z->self = nodeList.insert(nodeList.begin(), z);
-				root = z;
-			}
+			Node *z = new Node(p, nil_, nil_, R, std::make_pair(key, val));
+			if (p == nil_)
+				root_ = z;
 			else
 			{
 				if (p->key() < key)
-				{
 					p->right = z;
-					z->self = nodeList.insert(p->self.next(),z);//插在p的next和p的中间
-				}
 				else
-				{
-					p->left = z,
-					z->self = nodeList.insert(p->self,z);//插在p的prev和p的中间
-				}
+					p->left = z;
 			}
-			while (p != nil)
-				++p->sz, p = p->p;
+			while (p != nil_)
+				++p->size, p = p->p;
 			putFixUp(z);
 			return z;
 		}
 		void erase(Node *z)
 		{
-			nodeList.erase(z->self);
 			Node *tmp = z;
-			while (tmp != nil)
-				--tmp->sz, tmp = tmp->p;
+			while (tmp != nil_)
+				--tmp->size, tmp = tmp->p;
 			Node *y = z, *x;
 			bool oldColor = y->color;
-			if (z->left == nil)
+			if (z->left == nil_)
 			{
 				x = z->right;
 				transplant(z, z->right);
 			}
-			else if (z->right == nil)
+			else if (z->right == nil_)
 			{
 				x = z->left;
 				transplant(z, z->left);
@@ -348,7 +381,7 @@ namespace ds
 					Node *tempy = y;
 					while (tempy != z)
 					{
-						--tempy->sz;
+						--tempy->size;
 						tempy = tempy->p;
 					}
 					transplant(y, y->right);
@@ -358,54 +391,92 @@ namespace ds
 				transplant(z, y);
 				y->left = z->left, y->left->p = y;
 				y->color = z->color;
-				y->sz = y->left->sz + y->right->sz + 1;
+				y->size = y->left->size + y->right->size + 1;
 			}
+			delete z;
 			if (oldColor == B)
 				delFixUp(x);
 		}
-	public:
-		Map()
+		void clear(Node *x)
 		{
-			root = nil;
-			root->p = root->left = root->right = nil;
+			if (!x || x == nil_)
+				return;
+			clear(x->left);
+			clear(x->right);
+			delete x;
+		}
+		void cpy(Node *dest, const Node *sour,const Node *sournil_)
+		{
+			if (sour->left != sournil_)
+			{
+				dest->left = new Node(dest, nil_, nil_, sour->left->color, value_type(sour->left->value));
+				dest->left->size = sour->left->size;
+				cpy(dest->left, sour->left, sournil_);
+			}
+			if (sour->right != sournil_)
+			{
+				dest->right = new Node(dest, nil_, nil_, sour->right->color, value_type(sour->right->value));
+				dest->right->size = sour->right->size;
+				cpy(dest->right, sour->right, sournil_);
+			}
+		}
+	public:
+		explicit Map(DefaultValue defaultValue_):defaultValue_(defaultValue_), nil_(new Node)
+		{
+			root_ = nil_;
+			root_->p = root_->left = root_->right = nil_;
+		}
+		Map():nil_(new Node)
+		{
+			defaultValue_ = []()->mapped_type {return mapped_type(); };
+			root_ = nil_;
+			root_->p = root_->left = root_->right = nil_;
 		}
 		iterator find(const K& key)
 		{
 			if (Node *x = findNode(key).first)
 				return iterator(x);
-			return iterator(nodeList.end());
+			return end();
 		}
 		V& operator[](const K& key)
 		{
 			NodePair pn = findNode(key);
 			if (pn.first)
 				return pn.first->val();
-			return insert(pn.second, key, V())->val();
+			return insert(pn.second, key, defaultValue_())->val();
 		}
 		void erase(const K& key)
 		{
-			NodePair pn = findNode(key);
-			if (pn.first)
-				erase(pn.first);
+			if (Node *x = findNode(key).first)
+				erase(x);
 		}
-		iterator insert(const K& key, const V& val)
+		void erase(iterator where)
+		{
+			if (where.self_!=nil_)
+				erase(where.self_);
+		}
+		iterator insert(const key_type& key, const mapped_type& val)
 		{
 			//与stl统一，重复insert并不会更新节点的值
 			NodePair np = findNode(key);
 			if (np.first)
-				return iterator(np.first);
-			return iterator(insert(np.second, key, val));
+				return iterator(np.first, this);
+			return iterator(insert(np.second, key, val),this);
 		}
-		int size()const { return root->sz; }
-		int countLower(const K &rend, bool canEqual)
+		iterator insert(const value_type &kvpair)
 		{
-			Node *x = root;
+			return insert(kvpair.first, kvpair.second);
+		}
+		
+		int lower(const K &rend, bool afterEqual) const
+		{
+			Node *x = root_;
 			int cnt = 0;
-			while (x != nil)
+			while (x != nil_)
 			{
-				if (x->key < rend || (canEqual && !(rend < x->key) && !(x->key < rend)))
+				if (x->key < rend || (afterEqual && !(rend < x->key) && !(x->key < rend)))
 				{
-					cnt += x->left->sz + 1;
+					cnt += x->left->size + 1;
 					x = x->right;
 				}
 				else
@@ -414,28 +485,84 @@ namespace ds
 			return cnt;
 		}
 
-		int countBetween(int lend, int rend) { return countLower(rend, true) - countLower(lend, false); }
+		int between(int lend, int rend) const { return lower(rend, true) - lower(lend, false); }
 
 		iterator kth(int k)
 		{
-			Node *x = root;
-			while (x != nil)
+			Node *x = root_;
+			while (x != nil_)
 			{
-				if (x->left->sz + 1 == k)
-					return iterator(x);
-				if (x->left->sz + 1 < k)
+				if (x->left->size + 1 == k)
+					return iterator(x, this);
+				if (x->left->size + 1 < k)
 				{
-					k -= x->left->sz + 1;
+					k -= x->left->size + 1;
 					x = x->right;
 				}
 				else
 					x = x->left;
 			}
-			return iterator(nodeList.end());
+			return end();
 		}
-
-		iterator begin() { return iterator(*nodeList.begin()); }
-		iterator end() { return iterator(*nodeList.end()); }
+		void clear() { clear(root_); }
+		iterator begin() { return iterator(minChild(root_), this); }//root_为nil_时minChild返回nil_
+		iterator end() { return iterator(nil_,this); }
+		const_iterator begin() const { return const_iterator(minChild(root_), this); }//root_为nil_时minChild返回nil_
+		const_iterator end() const { return const_iterator(nil_, this); }
+		int size()const { return root_->size; }
+		void swap(Map &rhs) noexcept
+		{
+			std::swap(root_, rhs.root_);
+			std::swap(nil_, rhs.nil_);
+			std::swap(defaultValue_, rhs.defaultValue_);
+		}
+		Map(const Map&rhs):defaultValue_(rhs.defaultValue_)
+		{
+			nil_ = new Node;
+			if (rhs.root_==rhs.nil_)
+			{
+				root_ = nil_;
+				root_->p = root_->left = root_->right = nil_;
+			}
+			else
+			{
+				root_ = new Node(nil_, nil_, nil_, rhs.root_->color, value_type(rhs.root_->value));
+				root_->size = rhs.root_->size;
+				cpy(root_, rhs.root_, rhs.nil_);
+			}
+		}
+		Map& operator=(Map rhs)
+		{
+			swap(rhs);
+			return *this;
+		}
+		Map(Map &&rhs) noexcept
+		{
+			if (this!=&rhs)
+			{
+				nil_ = rhs.nil_;
+				root_ = rhs.root_;
+				rhs.nil_ = rhs.root_ = nullptr;
+				defaultValue_ = rhs.defaultValue_;
+			}
+		}
+		Map& operator=(Map &&rhs) noexcept
+		{
+			if (this != &rhs)
+			{
+				~Map();
+				nil_ = rhs.nil_;
+				root_ = rhs.root_;
+				rhs.nil_ = rhs.root_ = nullptr;
+				defaultValue_ = rhs.defaultValue_;
+			}
+			return *this;
+		}
+		~Map()
+		{
+			clear(root_);
+			delete nil_;
+		}
 	};
 }
 

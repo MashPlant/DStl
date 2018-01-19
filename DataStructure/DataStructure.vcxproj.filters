@@ -66,6 +66,9 @@
     <ClInclude Include="List.h">
       <Filter>头文件\List</Filter>
     </ClInclude>
+    <ClInclude Include="Map-List.h">
+      <Filter>头文件\Map</Filter>
+    </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>头文件\Map</Filter>
     </ClInclude>
@@ -90,6 +93,9 @@
       <Filter>头文件\Deque</Filter>
     </ClCompile>
     <ClCompile Include="SequenceContainer.cpp">
+      <Filter>头文件\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
       <Filter>头文件\Test</Filter>
     </ClCompile>
   </ItemGroup>

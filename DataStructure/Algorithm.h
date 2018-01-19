@@ -9,17 +9,17 @@ namespace ds
 	template<typename Iter, typename Comp>
 	void fixHeap_(Iter first,  Comp comp, int where, int heapSize)
 	{
-		int curMax = where, i = curMax;
+		int curMax = where, i = curMax, nxt = (i << 1) + 1;
 		while (true)
 		{
-			if ((i << 1) + 1 < heapSize && comp(first[curMax], first[(i << 1) + 1]))
-				curMax = (i << 1)+1;
-			if ((i << 1) + 2 < heapSize && comp(first[curMax], first[(i << 1) + 2]))
-				curMax = (i << 1) + 2;
+			if (nxt < heapSize && comp(first[curMax], first[nxt]))
+				curMax = nxt;
+			if (nxt + 1 < heapSize && comp(first[curMax], first[nxt + 1]))
+				curMax = nxt + 1;
 			if (curMax == i)
 				break;
 			std::swap(first[i], first[curMax]);
-			i = curMax;
+			i = curMax, nxt = (i << 1) + 1;
 		}
 	}
 	template<typename Iter, typename Comp>
@@ -119,7 +119,27 @@ namespace ds
 	{
 		ds::sort(first, last, std::less<typename std::iterator_traits<Iter>::value_type>());
 	}
-
+	inline void radixSort(int *first,int *last)
+	{
+		//只排正数，不管负数
+		const static int U = 65536;
+		static int cnt[U];
+		auto mask = [](int x, int d) {return (x >> (d * 16))&(U - 1); };
+		const int len = last - first;
+		int *tmp = new int[len];
+		for (int d=0;d<2;++d)
+		{
+			memset(cnt, 0, sizeof(cnt));
+			for (int i = 0; i < len; ++i)
+				++cnt[mask(first[i], d)];
+			for (int i = 1; i < U; ++i)
+				cnt[i] += cnt[i - 1];
+			for (int i = len - 1; i >= 0; --i)//逆序，保证稳定
+				tmp[--cnt[mask(first[i], d)]] = first[i];//cnt[mask(first[i], d)-1即是first[i]"应该放置"的位置
+			memcpy(first, tmp, len * sizeof(int));
+		}
+		delete []tmp;
+	}
 	//返回第一个>=val的,也即是第一个满足!comp(*where,val)的where
 	template<typename Iter, typename T, typename Comp>
 	Iter lower_bound(Iter first, Iter last, const T &val, Comp comp)
@@ -215,7 +235,7 @@ namespace ds
 		--last;
 		while (true)
 		{
-			if (first==last)
+			if (first == last)
 				return;
 			std::swap(*(first++), *(last--));
 			if (prev(first) == last)
@@ -228,7 +248,7 @@ namespace ds
 		Iter maxIter = first;
 		while (first!=last)
 		{
-			if (comp(*first, *maxIter))
+			if (comp(*maxIter, *first))
 				maxIter = first;
 			++first;
 		}
@@ -242,32 +262,42 @@ namespace ds
 	template <typename Iter, typename Comp>
 	Iter rangeMin(Iter first, Iter last, Comp comp)
 	{
-		Iter maxIter = first;
+		Iter minIter = first;
 		while (first != last)
 		{
-			if (comp(*maxIter, *first))
-				maxIter = first;
+			if (comp(*first, *minIter))
+				minIter = first;
 			++first;
 		}
-		return maxIter;
+		return minIter;
 	}
 	template <typename Iter>
 	Iter rangeMin(Iter first, Iter last)
 	{
 		return rangeMin(first, last, std::less<typename std::iterator_traits<Iter>::value_type>());
 	}
-	/*template <typename Iter,typename Comp>
+	template <typename Iter,typename Comp>
 	bool next_permutation(Iter first,Iter last,Comp comp)
 	{
 		//从后向前找，找到第一个下降元素(倒着找的意义上的下降)，如找不到证明整个数列降序排列，无下一排列
-		//将该元素与(该元素,last)间的最小元素交换，再将(用来换的元素,last)反向
-		while (last!=first)
-		{
-			if (comp(prev(last),last))
+		//将该元素与(该元素,last)间的最后一个(正序意义)小于该元素的元素交换，再将(用来换的元素,last)反向
+		Iter bound = last;
+		while (--last != first)
+			if (comp(*prev(last),*last))
 			{
-				
+				Iter firstDescend = prev(last);
+				Iter lastGreater = bound;
+				while (!(comp(*firstDescend, *--lastGreater)));
+				std::swap(*firstDescend, *lastGreater);
+				ds::reverse(last, bound);
+				return true;
 			}
-			//if (comp(*(last-1)))
-		}
-	}*/
+		ds::reverse(first, bound);
+		return false;
+	}
+	template <typename Iter>
+	bool next_permutation(Iter first, Iter last)
+	{
+		return ds::next_permutation(first, last, std::less<typename std::iterator_traits<Iter>::value_type>());
+	}
 }
