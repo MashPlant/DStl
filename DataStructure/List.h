@@ -1,7 +1,9 @@
 #pragma once
 namespace ds
 {
-	template<typename K>
+	//stl的容器都有一个Allocator参数，为了参数数量与之一致这里加一个PlaceHolder
+	//其他容器都还暂时没有加，因为没有需求
+	template<typename K,typename PlaceHolder = bool>
 	class List
 	{
 	private:
@@ -56,8 +58,14 @@ namespace ds
 			}
 			iterator prev()const { return iterator(self_->prev_); }
 			iterator next()const { return iterator(self_->next_); }
-			bool operator==(const_iterator rhs) const { return self_ == rhs.self_; }//iterator可以自动转const_iterator
-			bool operator!=(const_iterator rhs) const { return !(*this == rhs); }
+			bool operator==(const_iterator rhs) const
+			{
+				return self_ == rhs.self_;
+			}//iterator可以自动转const_iterator
+			bool operator!=(const_iterator rhs) const
+			{
+				return !(*this == rhs);
+			}
 			explicit iterator(Node *self = nullptr) :self_(self) {}
 			iterator(const_reference key, const_iterator prev, const_iterator next) : self_(new Node(key, prev.self_, next.self_)) {}
 		};
@@ -190,10 +198,38 @@ namespace ds
 		iterator insert(iterator where, Iter first, Iter last)//与标准库一样，当first或last是本list的迭代器时，结果未定义
 		{
 			//把[first,last)插入到where之前
-			//返回指向被插入的最后一个元素的迭代器
+			//返回指向被插入的第一个元素的迭代器
+			iterator beforeinsert = where.prev();
 			while (first != last)
 				insert(where, *first++), ++size_;
-			return where.prev();
+			return beforeinsert.next();
+		}
+
+		//标准库splice没有返回值。这个返回值完全是为了斐波那契堆加的(后来又发现用不着，就删掉了
+		void splice(iterator where,List &rhs,iterator sour) //返回值:first->类似插入的返回值，second->类似删除的返回值
+		{
+			iterator afterdel = sour.next();
+			insert(where, sour);
+			++size_, --rhs.size_;
+			//return { sour, afterdel };
+		}
+
+		void splice(iterator where,List &rhs) //清空rhs
+		{
+			if (this == &rhs || rhs.empty())
+				return;
+			//我也想写的优雅一点的，不过就这样也没毛病
+			iterator beforeinsert = where.prev();
+			Node *prev = where.prev().self_, *pos=where.self_,*sourfirst = rhs.begin().self_, *sourlast = rhs.end().prev().self_;
+			//连
+			sourfirst->prev_ = prev, prev->next_ = sourfirst;
+			sourlast->next_ = pos, pos->prev_ = sourlast;
+			//断，也就是把rhs的nil自己连成环
+			sourlast = rhs.end().self_;
+			sourlast->next_ = sourlast->prev_ = sourlast;
+			size_ += rhs.size_;
+			rhs.size_ = 0;
+			//return { beforeinsert.next(),rhs.end() };
 		}
 
 		void merge(List &rhs) //归并，清空rhs的内容
@@ -257,7 +293,10 @@ namespace ds
 		iterator end() { return nil_; }
 		const_iterator begin() const { return nil_.next(); }
 		const_iterator end() const { return nil_; }
-
+		reference front() { return *begin(); }
+		reference back() { return *(end().prev()); }
+		const_reference front() const { return *begin(); }
+		const_reference back() const { return *(end().prev()); }
 		void swap(List &rhs) noexcept
 		{
 			std::swap(nil_, rhs.nil_);

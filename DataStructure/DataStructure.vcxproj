@@ -140,9 +140,13 @@
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
     <ClInclude Include="Deque.h" />
+    <ClInclude Include="FibHeap.h" />
+    <ClInclude Include="HashMap.h" />
+    <ClInclude Include="LeftistTree.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Map-List.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="PriorityQueue.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Trie.h" />
@@ -152,8 +156,13 @@
   <ItemGroup>
     <ClCompile Include="DataStructure.cpp" />
     <ClCompile Include="GenData.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="SequenceContainer.cpp" />
+    <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp" />
+    <ClCompile Include="LuoguP3371Dijkstra.cpp" />
+    <ClCompile Include="LuoguP3377LeftistTree.cpp" />
+    <ClCompile Include="Map二连.cpp" />
+    <ClCompile Include="堆三连.cpp" />
+    <ClCompile Include="排序二连.cpp" />
+    <ClCompile Include="顺序容器三连.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

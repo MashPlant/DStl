@@ -19,7 +19,7 @@ namespace ds
 		typedef const K *const_pointer;
 	private:
 		const static int INITIAL_CAP = 16;
-		pointer arr;
+		pointer arr_;
 		int size_;
 		int capacity_;
 		void realloc(int newCapacity)
@@ -34,21 +34,17 @@ namespace ds
 
 			On failure, returns a null pointer. The original pointer ptr remains valid and may need to be deallocated with std::free()
 			*/
-			arr = (pointer)std::realloc(arr, sizeof(value_type) * newCapacity);
+			arr_ = (pointer)std::realloc(arr_, sizeof(value_type) * newCapacity);
 			capacity_ = newCapacity;
-			if (!arr)
+			if (!arr_)
 				exceptionHandle("alloc fail");
-		}
-		void shrink()
-		{
-			if ((size_ >> 1) + INITIAL_CAP < capacity_)
-				realloc(capacity_ >> 1);
 		}
 		void expand()
 		{
 			if (size_ == capacity_)
 				realloc(capacity_ << 1);
 		}
+
 		void exceptionHandle(const std::string &msg)
 		{
 			std::cerr << msg;
@@ -83,15 +79,14 @@ namespace ds
 		void push_back(const_reference key)
 		{
 			expand();
-			new (arr + size_++) value_type(key);
+			new (arr_ + size_++) value_type(key);
 		}
 		void pop_back()
 		{
 			if (size_ == 0)
 				exceptionHandle("pop_back at size_th of 0");
-			destruct(arr + size_ - 1);
+			destruct(arr_ + size_ - 1);
 			--size_;
-			shrink();
 		}
 
 		void erase(int pos, int cnt = 1)
@@ -101,42 +96,40 @@ namespace ds
 			cnt = min(size_ - pos, cnt);
 			if (!cnt)
 				return;
-			destruct(arr + pos, arr + pos + cnt);
-			mov(arr + pos, arr + pos + cnt, arr + size_);
+			destruct(arr_ + pos, arr_ + pos + cnt);
+			mov(arr_ + pos, arr_ + pos + cnt, arr_ + size_);
 			//注意到，对于类类型会产生size_和size_-1位置两个bit完全一致的版本
 			//但是这并不会有什么问题，因为不可能再对size_位置的对象调用析构函数
-			//真的没有问题吗？如果装的是shared_ptr呢？
 			size_ -= cnt;
-			shrink();
 		}
 		void insert(int pos, const_reference key) //insert and be there
 		{
 			if (pos < 0 || pos > size_)
 				exceptionHandle("insert subscript out of range");
 			expand();
-			mov(arr + pos + 1, arr + pos, arr + size_);
-			new (arr + pos) value_type(key);
+			mov(arr_ + pos + 1, arr_ + pos, arr_ + size_);
+			new (arr_ + pos) value_type(key);
 		}
-		iterator begin() { return arr; }
-		iterator end() { return arr + size_; }
-		iterator begin() const { return arr; }
-		iterator end() const { return arr + size_; }
+		iterator begin() { return arr_; }
+		iterator end() { return arr_ + size_; }
+		const_iterator begin() const { return arr_; }
+		const_iterator end() const { return arr_ + size_; }
+		reference front() { return *arr_; }
+		reference back() { return *(arr_ + size_ - 1); }
+		const_reference front() const { return *arr_; }
+		const_reference back() const { return *(arr_ + size_ - 1); }
 		bool empty() const { return size_ == 0; }
 		int size() const { return size_; }
 		int capacity() const { return capacity_; }
-		reference operator[](int pos)
-		{
-			if (pos < 0 || pos >= size_)
-				exceptionHandle("operator[] subscript out of range");
-			return arr[pos];
-		}
+		reference operator[](int pos) { return arr_[pos]; }
+		const_reference operator[](int pos) const { return arr_[pos]; }
 		Vector(int size = 0, int newCapacity = INITIAL_CAP) : size_(size), capacity_(newCapacity)
 		{
-			arr = (pointer)malloc(newCapacity * sizeof(value_type));
+			arr_ = (pointer)malloc(newCapacity * sizeof(value_type));
 		}
 		void swap(Vector &rhs) noexcept
 		{
-			std::swap(arr, rhs.arr);
+			std::swap(arr_, rhs.arr_);
 			std::swap(size_, rhs.size_);
 			std::swap(capacity_, rhs.capacity_);
 		}
@@ -145,21 +138,19 @@ namespace ds
 			swap(*this, rhs);
 			return *this;
 		}
-		Vector(const Vector &rhs) : arr(nullptr)
+		Vector(const Vector &rhs) : arr_(nullptr)
 		{
-			std::cout << "const Vector & ";
 			realloc(rhs.capacity_);
 			size_ = rhs.size_;
-			cpy(arr, rhs.begin(), rhs.end());
+			cpy(arr_, rhs.begin(), rhs.end());
 		}
 		Vector &operator=(Vector &&rhs) noexcept
 		{
-			std::cout << "= Vector && ";
 			if (this != &rhs)
 			{
 				~Vector();
-				arr = rhs.arr;
-				rhs.arr = nullptr;
+				arr_ = rhs.arr_;
+				rhs.arr_ = nullptr;
 				capacity_ = rhs.capacity_, size_ = rhs.size_;
 			}
 			return *this;
@@ -167,27 +158,27 @@ namespace ds
 		Vector(Vector &&rhs) noexcept
 		{
 			std::cout << " Vector && ";
-			arr = rhs.arr;
-			rhs.arr = nullptr;
+			arr_ = rhs.arr_;
+			rhs.arr_ = nullptr;
 			capacity_ = rhs.capacity_, size_ = rhs.size_;
 		}
-		Vector(const std::initializer_list<value_type> &rhs) : arr(nullptr)
+		Vector(const std::initializer_list<value_type> &rhs) : arr_(nullptr)
 		{
 			realloc(rhs.size() + INITIAL_CAP);
 			size_ = rhs.size();
-			cpy(arr, rhs.begin(), rhs.end());
+			cpy(arr_, rhs.begin(), rhs.end());
 		}
 		template <size_t N>
-		Vector(const K(&keys)[N]) : arr(nullptr)
+		Vector(const K(&keys)[N]) : arr_(nullptr)
 		{
 			realloc(N + INITIAL_CAP);
 			size_ = N;
-			cpy(arr, keys, keys + N);
+			cpy(arr_, keys, keys + N);
 		}
 		~Vector()
 		{
-			destruct(arr, arr + size_);
-			free(arr);
+			destruct(arr_, arr_ + size_);
+			free(arr_);
 		}
 	};
 

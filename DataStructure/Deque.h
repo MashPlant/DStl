@@ -79,27 +79,6 @@ namespace ds
 				iterator tmp = *this;
 				return tmp += -offset;
 			}
-			//两个迭代器间的运算为const版本和非const版本都重载一份
-			//之所以不选择让运算接受const_iterator为参数，主要是考虑到迭代器大小为4+4+2+2，参数传递时用引用更好
-			int operator-(const iterator &rhs) const
-			{
-				return ((cur_ - rhs.cur_) & (capacity_ - 1)) * (*this < rhs ? -1 : 1);
-			}
-			bool operator!=(const iterator &rhs) const { return self_ != rhs.self_; }
-			bool operator==(const iterator &rhs) const { return self_ == rhs.self_; }
-			bool operator<(const iterator &rhs) const
-			{
-				bool l1 = self_ < arr_, l2 = rhs.self_ < rhs.arr_;
-				if (l1 && !l2)
-					return false; //this 在arr_左,rhs在右
-				if (!l1 && l2)
-					return true;        //this 在arr_右,rhs在左
-				return cur_ < rhs.cur_; //在同侧，越右越大
-			}
-			bool operator>(const iterator &rhs) const { return !*this < rhs && *this == rhs; }
-			bool operator<=(const iterator &rhs) const { return *this < rhs || *this == rhs; }
-			bool operator>=(const iterator &rhs) const { return !*this < rhs; }
-			
 			int operator-(const const_iterator &rhs) const
 			{
 				return ((cur_ - rhs.cur_) & (capacity_ - 1)) * (*this < rhs ? -1 : 1);
@@ -118,7 +97,6 @@ namespace ds
 			bool operator>(const const_iterator &rhs) const { return !*this < rhs && *this == rhs; }
 			bool operator<=(const const_iterator &rhs) const { return *this < rhs || *this == rhs; }
 			bool operator>=(const const_iterator &rhs) const { return !*this < rhs; }
-
 			reference operator[](int i) const { return *(*this + i); }
 		};
 		class const_iterator
@@ -160,20 +138,7 @@ namespace ds
 			bool operator>(const const_iterator &rhs) const { return !*this < rhs && *this == rhs; }
 			bool operator<=(const const_iterator &rhs) const { return *this < rhs || *this == rhs; }
 			bool operator>=(const const_iterator &rhs) const { return !*this < rhs; }
-
-			int operator-(const iterator &rhs) const { return ((cur_ - rhs.cur_) & (capacity_ - 1)) * (*this < rhs ? -1 : 1); }
-			bool operator!=(const iterator &rhs) const { return self_ != rhs.self_; }
-			bool operator==(const iterator &rhs) const { return self_ == rhs.self_; }
-			bool operator<(const iterator &rhs) const
-			{
-				bool l1 = self_ < arr_, l2 = rhs.self_ < rhs.arr_;
-				if (l1 && !l2) return false; if (!l1 && l2) return true;
-				return cur_ < rhs.cur_;
-			}
-			bool operator>(const iterator &rhs) const { return !*this < rhs && *this == rhs; }
-			bool operator<=(const iterator &rhs) const { return *this < rhs || *this == rhs; }
-			bool operator>=(const iterator &rhs) const { return !*this < rhs; }
-			reference operator[](int i) const { return *(*this + i); }
+			const_reference operator[](int i) const { return *(*this + i); }
 		};
 	private:
 		iterator arr_;
@@ -309,6 +274,10 @@ namespace ds
 		iterator end() { return arr_ + size_; }
 		const_iterator begin() const { return arr_; }
 		const_iterator end() const { return arr_ + size_; }
+		reference front() { return *arr_; }
+		reference back() { return *(arr_ + size_ - 1); }
+		const_reference front() const { return *arr_; }
+		const_reference back() const { return *(arr_ + size_ - 1); }
 		Deque(int size = 0, int capacity = INITIAL_CAP) : size_(size), capacity_(calc(capacity))
 		{
 			pointer ptr = (pointer)malloc(capacity_ * sizeof(value_type));

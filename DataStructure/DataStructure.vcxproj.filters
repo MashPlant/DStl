@@ -37,6 +37,12 @@
     <Filter Include="头文件\Map">
       <UniqueIdentifier>{b17fa315-0fb8-46aa-901c-8ad8fb624ea6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\HashMap">
+      <UniqueIdentifier>{b4941244-c5c5-4250-b251-139d87c58ad6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Heap">
+      <UniqueIdentifier>{5eb50dc3-6da2-439f-b4ff-78452652dacd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -72,6 +78,18 @@
     <ClInclude Include="Map.h">
       <Filter>头文件\Map</Filter>
     </ClInclude>
+    <ClInclude Include="HashMap.h">
+      <Filter>头文件\HashMap</Filter>
+    </ClInclude>
+    <ClInclude Include="FibHeap.h">
+      <Filter>头文件\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="PriorityQueue.h">
+      <Filter>头文件\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="LeftistTree.h">
+      <Filter>头文件\Heap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -92,11 +110,26 @@
     <ClCompile Include="Test.cpp">
       <Filter>头文件\Deque</Filter>
     </ClCompile>
-    <ClCompile Include="SequenceContainer.cpp">
+    <ClCompile Include="顺序容器三连.cpp">
       <Filter>头文件\Test</Filter>
     </ClCompile>
-    <ClCompile Include="Map.cpp">
+    <ClCompile Include="Map二连.cpp">
       <Filter>头文件\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="排序二连.cpp">
+      <Filter>头文件\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="堆三连.cpp">
+      <Filter>头文件\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="LuoguP3377LeftistTree.cpp">
+      <Filter>头文件\Heap</Filter>
+    </ClCompile>
+    <ClCompile Include="LuoguP3371Dijkstra.cpp">
+      <Filter>头文件\Heap</Filter>
+    </ClCompile>
+    <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp">
+      <Filter>头文件\Heap</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -9,19 +9,44 @@ namespace ds
 	template<typename Iter, typename Comp>
 	void fixHeap_(Iter first,  Comp comp, int where, int heapSize)
 	{
-		int curMax = where, i = curMax, nxt = (i << 1) + 1;
-		while (true)
+		int nxt = (where << 1) + 1;
+		auto value = std::move(first[where]);
+		while (nxt < heapSize)
 		{
-			if (nxt < heapSize && comp(first[curMax], first[nxt]))
-				curMax = nxt;
-			if (nxt + 1 < heapSize && comp(first[curMax], first[nxt + 1]))
-				curMax = nxt + 1;
-			if (curMax == i)
+			if (nxt + 1 < heapSize && comp(first[nxt], first[nxt + 1]))
+				++nxt;
+			if (comp(value,first[nxt]))
+			{
+				first[where] = first[nxt];
+				where = nxt;
+				nxt = (where << 1) + 1;;
+			}
+			else
 				break;
-			std::swap(first[i], first[curMax]);
-			i = curMax, nxt = (i << 1) + 1;
 		}
+		first[where] = value;
 	}
+	template<typename Iter, typename Comp>
+	void push_heap(Iter first,Iter last,Comp comp) //[first,last-1)为合法堆,push的新值是last-1
+	{
+		//stl实现,不用swap而是用赋值,稍微快一些
+		auto value = std::move(*(last - 1));
+		int hole = last - first - 1;//刚刚被move的下标
+		int parent = (hole-1) >> 1;
+		while (hole && comp(*(first+parent),value))//value一直在向上浮动
+		{
+			*(first + hole) = std::move(*(first + parent));
+			hole = parent;
+			parent = (hole-1) >> 1;
+		}
+		*(first + hole) = std::move(value);
+	}
+	template<typename Iter>
+	void push_heap(Iter first, Iter last)
+	{
+		push_heap(first, last, std::less<typename std::iterator_traits<Iter>::value_type >());
+	}
+
 	template<typename Iter, typename Comp>
 	void heapSort(Iter first, Iter last, Comp comp)
 	{
@@ -53,8 +78,8 @@ namespace ds
 			if (first >= last)
 				return first;
 			std::swap(*first, *last);
-			++first; //swap完了之后first指向的位置已经保证<=pivot，last同理
-			//但是对last的修改在下一轮循环中进行，可以避免特判last是不是尾后迭代器
+			++first; //swap完了之后first指向的位置已经保证<=pivot,last同理
+			//但是对last的修改在下一轮循环中进行,可以避免特判last是不是尾后迭代器
 		}
 	}
 	template <typename T, typename Comp>
@@ -73,7 +98,7 @@ namespace ds
 			return a;
 		if (comp(b, c)) 
 			return c;
-		return c;
+		return b;
 	}
 	inline int lg_(int x)
 	{
@@ -121,7 +146,7 @@ namespace ds
 	}
 	inline void radixSort(int *first,int *last)
 	{
-		//只排正数，不管负数
+		//只排正数,不管负数
 		const static int U = 65536;
 		static int cnt[U];
 		auto mask = [](int x, int d) {return (x >> (d * 16))&(U - 1); };
@@ -134,7 +159,7 @@ namespace ds
 				++cnt[mask(first[i], d)];
 			for (int i = 1; i < U; ++i)
 				cnt[i] += cnt[i - 1];
-			for (int i = len - 1; i >= 0; --i)//逆序，保证稳定
+			for (int i = len - 1; i >= 0; --i)//逆序,保证稳定
 				tmp[--cnt[mask(first[i], d)]] = first[i];//cnt[mask(first[i], d)-1即是first[i]"应该放置"的位置
 			memcpy(first, tmp, len * sizeof(int));
 		}
@@ -182,7 +207,7 @@ namespace ds
 		return ds::upper_bound(first, last, val, std::less<T>());
 	}
 
-	//返回第一个满足check的，假定前半段不满足而后半段满足
+	//返回第一个满足check的,假定前半段不满足而后半段满足
 	template<typename Iter, typename Check>
 	Iter bisearch(Iter first, Iter last, Check check)
 	{
@@ -279,8 +304,8 @@ namespace ds
 	template <typename Iter,typename Comp>
 	bool next_permutation(Iter first,Iter last,Comp comp)
 	{
-		//从后向前找，找到第一个下降元素(倒着找的意义上的下降)，如找不到证明整个数列降序排列，无下一排列
-		//将该元素与(该元素,last)间的最后一个(正序意义)小于该元素的元素交换，再将(用来换的元素,last)反向
+		//从后向前找,找到第一个下降元素(倒着找的意义上的下降),如找不到证明整个数列降序排列,无下一排列
+		//将该元素与(该元素,last)间的最后一个(正序意义)小于该元素的元素交换,再将(用来换的元素,last)反向
 		Iter bound = last;
 		while (--last != first)
 			if (comp(*prev(last),*last))
