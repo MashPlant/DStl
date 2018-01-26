@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-
+#include <functional>
 namespace ds
 {
 	template<typename K, typename V,bool LinkWithList = false>
@@ -103,7 +103,6 @@ namespace ds
 	private:
 		const static bool B = false;
 		const static bool R = true;
-		typedef typename List<Node*>::iterator ListIter;
 		struct Node
 		{
 			value_type value;
@@ -435,7 +434,7 @@ namespace ds
 		iterator find(const K& key)
 		{
 			if (Node *x = findNode(key).first)
-				return iterator(x);
+				return iterator(x, this);
 			return end();
 		}
 		V& operator[](const K& key)

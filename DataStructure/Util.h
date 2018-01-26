@@ -3,13 +3,14 @@
 #include <random>
 #include <functional>
 #include <iostream>
+#include <ctime>
 using std::string;
 namespace ds
 {
 	template<typename K>
 	void print(const K &lst)
 	{
-		for (int i : lst)
+		for (const auto &i : lst)
 			std::cout << i << ' ';
 		std::cout << std::endl;
 	}
@@ -58,9 +59,17 @@ namespace ds
 	}
 	inline int rani(int l, int r)
 	{
-		static std::random_device rnd;
-		return rnd() % (r - l + 1) + l;
-		//return (rand()*RAND_MAX + rand()) % (r - l + 1) + l;
+		static int seed = time(0);
+		auto xorshift32 = [&]()->uint32_t 
+		{ 	
+			/* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */ 	
+			uint32_t x = seed; 	
+			x ^= x << 13; 	
+			x ^= x >> 17; 	
+			x ^= x << 5; 	
+			return seed = x;
+		};
+		return xorshift32() % (r - l + 1) + l;
 	}
 	template <typename K>
 	K max(const K &lhs, const K &rhs) { return lhs < rhs ? rhs : lhs; }

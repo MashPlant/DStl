@@ -19,7 +19,7 @@ using namespace ds;
 template <typename Container>
 void sort(Container &x)
 {
-	sort(x.begin(), x.end());
+	ds::sort(x.begin(), x.end());
 }
 template <typename K>
 void sort(List<K> &lst)
@@ -38,7 +38,7 @@ void test()
 	Container x;
 	clock_t beg = clock();
 	for (int i = 0; i < 1e7; ++i)
-		x.push_back(rani(1, 1e7));
+		x.push_back(rani(1, 1e9));
 	cout << clock() - beg << endl;
 	beg = clock();
 	sort(x);

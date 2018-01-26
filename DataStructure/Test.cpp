@@ -9,7 +9,7 @@
 using namespace std;
 using namespace ds;
 
-void itertest()
+/*void itertest()
 {
 	Deque<int> dq;
 	for (int i = 0; i < 1e3; ++i)
@@ -21,7 +21,7 @@ void itertest()
 	for_each(dq.begin(), dq.end(), [](int x) {cout << x << ' '; });
 	getchar();
 }
-/*int main()
+int main()
 {
 	freopen("in.txt", "r", stdin);
 	//freopen("deque.txt", "w", stdout);
@@ -30,8 +30,8 @@ void itertest()
 	deque<int> stldq;
 	while (n--)
 	{
-		//if (n % 100 == 0)
-		//	cout << n << ' ';
+		if (n % 100 == 0)
+			cout << n << ' ';
 		int o = ds::read(), x = ds::read(), y;
 		if (o != 1 && o != 2)
 			y = ds::read();
@@ -68,10 +68,10 @@ void itertest()
 			break;
 		}
 	}
-	if (dq == stldq)
-		cout << "yes" << endl;
-	else
-		cout << "no" << endl;
+	for (int i = 0; i < dq.size(); ++i)
+		if (dq[i] != stldq[i])
+			cout << "no\n";
+	cout << "yes\n";
 	cout << "finished";
 	return 0;
 }*/

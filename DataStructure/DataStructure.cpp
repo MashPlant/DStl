@@ -1,13 +1,14 @@
 #include "stdafx.h"
-#include "Util.h"
-#include "Deque.h"
-#include "Vector.h"
-#include <algorithm>
-#include <ctime>
-#include "PriorityQueue.h"
 #include "FibHeap.h"
-#include "LeftistTree.h"
-#include <list>
+#include "Algorithm.h"
+#include <iostream>
+#include "Util.h"
+#include "TimSort.h"
+#include <algorithm>
+#include "BTree.h"
+#include "Map.h"
+#include <map>
+#include <set>
 using namespace std;
 using namespace ds;
 
@@ -22,15 +23,9 @@ namespace ds
 	};
 	const float NumericTraits<float>::NegaInf = -1e8;
 }
-
-int main()
+/*int main()
 {
-	FibHeap<float> fib;
-	auto x = fib.push(1.0f);
-	fib.push(2.0f);
-	fib.push(3.0f);
-	fib.delNode(x);
-	cout << fib.top();
+	
 	getchar();
-}
+}*/
 

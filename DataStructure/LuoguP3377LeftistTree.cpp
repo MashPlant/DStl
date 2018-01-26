@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <utility>
 
-template <typename K>
+/*template <typename K>
 class LeftistTree
 {
 private:
@@ -65,12 +65,8 @@ void init(int n)
 }
 int find(int x) { return p[x] == x ? x : p[x] = find(p[x]); }
 //---------------------------------------------------------------
-/*
-一开始有N个小根堆，每个堆包含且仅包含一个数。接下来需要支持两种操作：
-操作1： 1 x y 将第x个数和第y个数所在的小根堆合并（若第x或第y个数已经被删除或第x和第y个数在用一个堆内，则无视此操作）
-操作2： 2 x 输出第x个数所在的堆最小数，并将其删除（若第x个数已经被删除，则输出-1并无视删除操作）
-*/
-/*int main()
+
+int main()
 {
 	scanf("%d%d", &n, &m);
 	init(n);

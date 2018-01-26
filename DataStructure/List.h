@@ -1,4 +1,6 @@
 #pragma once
+#include <utility>
+#include <iterator>
 namespace ds
 {
 	//stl的容器都有一个Allocator参数，为了参数数量与之一致这里加一个PlaceHolder
@@ -121,11 +123,6 @@ namespace ds
 			Node(const_reference key, Node *prev, Node *next) :key_(key) { insert(prev, next, this); }
 			~Node() { extract(this); }
 		};
-		void exceptionHandle(const std::string &msg)
-		{
-			std::cerr << msg;
-			exit(1);
-		}
 		static void remove(iterator where) { delete where.self_; }
 		int size_ = 0;
 		iterator nil_; // head = nil->next , tail = nil -> prev
@@ -149,8 +146,6 @@ namespace ds
 		}
 		void pop_back()
 		{
-			if (nil_.prev() == nil_) //等价于size_==0
-				exceptionHandle("pop_back at lenth of 0");
 			--size_;
 			remove(nil_.prev());//Node析构函数被调用，自动拼接
 		}
@@ -163,8 +158,6 @@ namespace ds
 		}
 		void pop_front()
 		{
-			if (nil_.next() == nil_) //等价于size_==0
-				exceptionHandle("pop_front at lenth of 0");
 			--size_;
 			remove(nil_.next());
 		}

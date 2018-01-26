@@ -12,7 +12,7 @@
 using namespace std;
 using namespace ds;
 
-namespace testpq
+/*namespace testpq
 {
 	const int maxn = 3e6;
 	int input[maxn], a[maxn];
@@ -35,7 +35,7 @@ namespace testpq
 	}
 	
 }
-/*int main()
+int main()
 {
 	for (int i = 0; i < testpq::maxn; ++i)
 		testpq::input[i] = rani(1, 1e9);
