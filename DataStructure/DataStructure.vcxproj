@@ -139,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
+    <ClInclude Include="AVL.h" />
     <ClInclude Include="BTree.h" />
     <ClInclude Include="Deque.h" />
     <ClInclude Include="FibHeap.h" />
@@ -147,7 +148,10 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="Map-List.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="NaiveDB.h" />
     <ClInclude Include="PriorityQueue.h" />
+    <ClInclude Include="RBTree.h" />
+    <ClInclude Include="Splay.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TimSort.h" />
@@ -156,13 +160,13 @@
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BTreeTest.cpp" />
+    <ClCompile Include="对拍.cpp" />
     <ClCompile Include="DataStructure.cpp" />
     <ClCompile Include="GenData.cpp" />
     <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp" />
     <ClCompile Include="LuoguP3371Dijkstra.cpp" />
     <ClCompile Include="LuoguP3377LeftistTree.cpp" />
-    <ClCompile Include="Map三连.cpp" />
+    <ClCompile Include="Mapn连.cpp" />
     <ClCompile Include="堆三连.cpp" />
     <ClCompile Include="排序四连.cpp" />
     <ClCompile Include="顺序容器三连.cpp" />

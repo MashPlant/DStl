@@ -40,7 +40,7 @@
     <Filter Include="头文件\AssociativeContainer">
       <UniqueIdentifier>{b17fa315-0fb8-46aa-901c-8ad8fb624ea6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\AssociativeContainer\BTreeTest">
+    <Filter Include="头文件\AssociativeContainer\对拍">
       <UniqueIdentifier>{acf24087-7a5d-48cf-868f-4eb50594a5e9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -96,6 +96,18 @@
     <ClInclude Include="HashMap.h">
       <Filter>头文件\AssociativeContainer</Filter>
     </ClInclude>
+    <ClInclude Include="NaiveDB.h">
+      <Filter>头文件\AssociativeContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="RBTree.h">
+      <Filter>头文件\AssociativeContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="AVL.h">
+      <Filter>头文件\AssociativeContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="Splay.h">
+      <Filter>头文件\AssociativeContainer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -134,10 +146,10 @@
     <ClCompile Include="排序四连.cpp">
       <Filter>头文件\Test</Filter>
     </ClCompile>
-    <ClCompile Include="BTreeTest.cpp">
-      <Filter>头文件\AssociativeContainer\BTreeTest</Filter>
+    <ClCompile Include="对拍.cpp">
+      <Filter>头文件\AssociativeContainer\对拍</Filter>
     </ClCompile>
-    <ClCompile Include="Map三连.cpp">
+    <ClCompile Include="Mapn连.cpp">
       <Filter>头文件\Test</Filter>
     </ClCompile>
   </ItemGroup>

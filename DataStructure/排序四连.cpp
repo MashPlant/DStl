@@ -2,7 +2,7 @@
 //
 
 #include "stdafx.h"
-#include "Util.h"
+/*#include "Util.h"
 #include <algorithm>
 #include <ctime>
 #include "Algorithm.h"
@@ -11,7 +11,7 @@ using namespace std;
 using namespace ds;
 
 const long long maxn = 1e8;
-/*void stable()
+void stable()
 {
 	struct A
 	{
@@ -34,7 +34,7 @@ const long long maxn = 1e8;
 	std::stable_sort(a, a + maxn);
 	cout << clock() - beg << endl;
 	cout << is_sorted(a, a + maxn) << endl;
-}*/
+}
 int main()
 {
 	//stable();
@@ -81,12 +81,12 @@ int main()
 	cout << clock() - beg << endl;
 	cout << is_sorted(a, a + maxn) << endl;
 
-	/*for (int i = 0; i < maxn; ++i)
+	for (int i = 0; i < maxn; ++i)
 		a[i] = input[i];
 	beg = clock();
 	TimSort<int *>(a, a + maxn).sort();
 	cout << clock() - beg << endl;
-	cout << is_sorted(a, a + maxn) << endl;*/
+	cout << is_sorted(a, a + maxn) << endl;
 	getchar();
-}
+}*/
 

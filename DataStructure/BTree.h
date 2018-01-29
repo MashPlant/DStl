@@ -87,6 +87,9 @@ namespace ds
 			shiftBy(x->values + i + 1, x->cnt - i - 1, -1);
 			shiftBy(x->child + i + 2, x->cnt - i - 1, -1);
 			--x->cnt;
+
+			z->cnt = 0;
+			delete z;
 		}
 		void erase(Node *x, const K& key)
 		{
@@ -234,5 +237,4 @@ namespace ds
 		BTree &operator=(const BTree &rhs) = delete;
 		~BTree() { clear(root); }
 	};
-
 }

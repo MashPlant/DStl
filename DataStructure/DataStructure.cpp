@@ -1,31 +1,23 @@
 #include "stdafx.h"
-#include "FibHeap.h"
 #include "Algorithm.h"
 #include <iostream>
 #include "Util.h"
-#include "TimSort.h"
 #include <algorithm>
 #include "BTree.h"
 #include "Map.h"
+#include "NaiveDB.h"
 #include <map>
 #include <set>
+#include "AVL.h"
+#include "Splay.h"
 using namespace std;
 using namespace ds;
 
-
-
-namespace ds
+int main()
 {
-	template<>
-	struct NumericTraits<float>
-	{
-		const static float NegaInf;
-	};
-	const float NumericTraits<float>::NegaInf = -1e8;
-}
-/*int main()
-{
-	
+	Map<int, int, less<int>, RBTree> rbtree;
+	Map<int, int, less<int>, Splay> splay;
+	Map<int, int, less<int>, AVL> avl;
 	getchar();
-}*/
+}
 
