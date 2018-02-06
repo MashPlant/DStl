@@ -18,10 +18,7 @@ namespace ds
 		typedef const K *const_iterator;
 		typedef const K *const_pointer;
 	private:
-		const static int INITIAL_CAP = 16;
-		pointer arr_;
-		int size_;
-		int capacity_;
+		const static int INITIAL_CAP = 8;
 		void realloc(int newCapacity)
 		{
 			/*
@@ -31,26 +28,16 @@ namespace ds
 			b) allocating a new memory block of size newsize bytes,
 			copying memory area with size equal the lesser of the new and the old sizes,
 			and freeing the old block.
-
 			On failure, returns a null pointer. The original pointer ptr remains valid and may need to be deallocated with std::free()
 			*/
 			arr_ = (pointer)std::realloc(arr_, sizeof(value_type) * newCapacity);
 			capacity_ = newCapacity;
-			if (!arr_)
-				exceptionHandle("alloc fail");
 		}
 		void expand()
 		{
 			if (size_ == capacity_)
 				realloc(capacity_ << 1);
 		}
-
-		void exceptionHandle(const std::string &msg)
-		{
-			std::cerr << msg;
-			exit(1);
-		}
-
 		void destruct(iterator first, iterator last)
 		{
 			if (std::is_class<value_type>::value)
@@ -62,6 +49,16 @@ namespace ds
 			if (std::is_class<value_type>::value)
 			where->~K();
 		}
+		static int calc(int len)
+		{
+			int cap = INITIAL_CAP;
+			for (; cap < len; cap <<= 1);
+			return cap;
+		}
+	protected:
+		pointer arr_ = nullptr;
+		int size_ = 0;
+		int capacity_ = INITIAL_CAP;
 		void mov(iterator dest, const_iterator first, const_iterator last) //放弃原来的
 		{
 			memmove(dest, first, (last - first) * sizeof(value_type));
@@ -74,25 +71,21 @@ namespace ds
 			else
 				memcpy(dest, first, (last - first) * sizeof(value_type));
 		}
-
 	public:
 		void push_back(const_reference key)
 		{
 			expand();
 			new (arr_ + size_++) value_type(key);
 		}
-		void pop_back()
+		void addAll(const Vector &rhs)
 		{
-			if (size_ == 0)
-				exceptionHandle("pop_back at size_th of 0");
-			destruct(arr_ + size_ - 1);
-			--size_;
+			reserve(size_ + rhs.size_);
+			cpy(arr_ + size_, rhs.begin(), rhs.end());
+			size_ += rhs.size_;
 		}
-
+		void pop_back() { destruct(arr_ + --size_); }
 		void erase(int pos, int cnt = 1)
 		{
-			if (pos < 0 || pos >= size_)
-				exceptionHandle("erase subscript out of range");
 			cnt = min(size_ - pos, cnt);
 			if (!cnt)
 				return;
@@ -104,11 +97,15 @@ namespace ds
 		}
 		void insert(int pos, const_reference key) //insert and be there
 		{
-			if (pos < 0 || pos > size_)
-				exceptionHandle("insert subscript out of range");
 			expand();
 			mov(arr_ + pos + 1, arr_ + pos, arr_ + size_);
 			new (arr_ + pos) value_type(key);
+		}
+		void reserve(int nCapacity)
+		{
+			nCapacity = calc(nCapacity);
+			if (nCapacity > capacity_)
+				realloc(nCapacity);
 		}
 		iterator begin() { return arr_; }
 		iterator end() { return arr_ + size_; }
@@ -123,9 +120,9 @@ namespace ds
 		int capacity() const { return capacity_; }
 		reference operator[](int pos) { return arr_[pos]; }
 		const_reference operator[](int pos) const { return arr_[pos]; }
-		Vector(int size = 0, int newCapacity = INITIAL_CAP) : size_(size), capacity_(newCapacity)
+		Vector(int size = 0, int capacity = INITIAL_CAP) : size_(size), capacity_(capacity)
 		{
-			arr_ = (pointer)malloc(newCapacity * sizeof(value_type));
+			arr_ = (pointer)malloc(capacity * sizeof(value_type));
 		}
 		void swap(Vector &rhs) noexcept
 		{
@@ -140,7 +137,7 @@ namespace ds
 		}
 		Vector(const Vector &rhs) : arr_(nullptr)
 		{
-			realloc(rhs.capacity_);
+			reserve(rhs.size_);
 			size_ = rhs.size_;
 			cpy(arr_, rhs.begin(), rhs.end());
 		}
@@ -150,35 +147,30 @@ namespace ds
 			{
 				~Vector();
 				arr_ = rhs.arr_;
-				rhs.arr_ = nullptr;
 				capacity_ = rhs.capacity_, size_ = rhs.size_;
+				rhs.arr_ = nullptr;
 			}
 			return *this;
 		}
 		Vector(Vector &&rhs) noexcept
 		{
-			std::cout << " Vector && ";
 			arr_ = rhs.arr_;
-			rhs.arr_ = nullptr;
 			capacity_ = rhs.capacity_, size_ = rhs.size_;
+			rhs.arr_ = nullptr;
 		}
-		Vector(const std::initializer_list<value_type> &rhs) : arr_(nullptr)
+		Vector(const std::initializer_list<value_type> &rhs)
 		{
-			realloc(rhs.size() + INITIAL_CAP);
+			reserve(rhs.size());
 			size_ = rhs.size();
 			cpy(arr_, rhs.begin(), rhs.end());
 		}
-		template <size_t N>
-		Vector(const K(&keys)[N]) : arr_(nullptr)
-		{
-			realloc(N + INITIAL_CAP);
-			size_ = N;
-			cpy(arr_, keys, keys + N);
-		}
 		~Vector()
 		{
-			destruct(arr_, arr_ + size_);
-			free(arr_);
+			if (arr_)
+			{
+				destruct(arr_, arr_ + size_);
+				free(arr_);
+			}
 		}
 	};
 

@@ -15,7 +15,6 @@ namespace ds
 		typedef typename Traits::KeyCompare KeyCompare;
 		const static bool B = false;
 		const static bool R = true;
-	public:
 		struct Node
 		{
 			ValueType value;
@@ -30,6 +29,8 @@ namespace ds
 			Node() = default;
 			Node(Node* p, Node* l, Node* r, bool c, const ValueType &v) :value(v), p(p), left(l), right(r), color(c), size(1) {}
 		};
+	public:
+		typedef Node* LinkType;
 	private:
 		typedef std::pair<Node*, Node*> NodePair;
 		KeyCompare comp;
@@ -386,7 +387,7 @@ namespace ds
 			std::swap(root_, rhs.root_);
 			std::swap(nil_, rhs.nil_);
 		}
-		RBTree(KeyCompare comp):comp(comp),nil_(new Node)
+		RBTree(KeyCompare comp = KeyCompare()):comp(comp),nil_(new Node)
 		{
 			root_ = nil_;
 			root_->p = root_->left = root_->right = nil_;

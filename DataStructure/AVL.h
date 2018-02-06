@@ -2,7 +2,7 @@
 #include <functional>
 #include <queue>
 #include <utility>
-#include <iostream>
+#include "TreeUtil.h"
 namespace ds
 {
 	template <typename Traits>
@@ -25,6 +25,12 @@ namespace ds
 			const KeyType &key() const { return Traits::KeyOf(value); }
 			ValueType &operator*() { return value; }
 			ValueType *operator->() { return &(operator*()); }
+			LinkType clone(LinkType p,LinkType l,LinkType r) const
+			{
+				LinkType ret = new Node(p, l, r, ValueType(value));
+				ret->sz = sz, ret->h = h;
+				return ret;
+			}
 			Node() = default;
 			Node(LinkType p, LinkType l, LinkType r, const ValueType &value) :p(p), value(value), sz(1), h(1)
 			{
@@ -75,34 +81,26 @@ namespace ds
 			x->h = h;
 			return false;
 		}
-		LinkType extremeChild(LinkType x, const int what) const
+		static bool check(LinkType x) { return x->h == max(x->ch[0]->h, x->ch[1]->h) + 1; }
+	public:
+		LinkType nextNode(Node *x)const { return TreeUtil::nextNode(x, nil_); }
+		LinkType prevNode(Node *x)const { return TreeUtil::prevNode(x, nil_, root_); }
+		LinkType kth(const int k)const { return TreeUtil::kth(root_, nil_, k); }
+		int lower(const KeyType &key, const bool afterEqual) const { return TreeUtil::lower(key, root_, nil_, afterEqual, comp); }
+		NodePair findNode(const KeyType &key, LinkType x = nullptr) //从x开始搜
 		{
-			while (x->ch[what] != nil_)
-				x = x->ch[what];
-			return x;
-		}
-		void clear(LinkType x)
-		{
-			if (!x || x == nil_)
-				return;
-			clear(x->ch[0]);
-			clear(x->ch[1]);
-			delete x;
-		}
-		void cpy(LinkType dest, const LinkType sour, const LinkType sournil_)
-		{
-			if (sour->ch[0] != sournil_)
+			if (!x) x = root_;
+			LinkType p = nil_;
+			while (x != nil_)
 			{
-				dest->ch[0] = new Node(dest, nil_, nil_, ValueType(sour->ch[0]->value));
-				dest->ch[0]->size = sour->ch[0]->size;
-				cpy(dest->ch[0], sour->ch[0], sournil_);
+				if (comp(x->key(), key))
+					p = x, x = x->ch[1];
+				else if (!comp(key, x->key()))
+					return { x,p };
+				else
+					p = x, x = x->ch[0];
 			}
-			if (sour->ch[1] != sournil_)
-			{
-				dest->ch[1] = new Node(dest, nil_, nil_, ValueType(sour->ch[1]->value));
-				dest->ch[1]->size = sour->ch[1]->size;
-				cpy(dest->ch[1], sour->ch[1], sournil_);
-			}
+			return { nullptr,p };
 		}
 		LinkType insert(LinkType x, const ValueType &value)
 		{
@@ -129,74 +127,6 @@ namespace ds
 			}
 			return z;
 		}
-	public:
-		LinkType nextNode(LinkType x) const
-		{
-			if (x->ch[1] != nil_)
-				return extremeChild(x->ch[1], 0);
-			while (x->p->ch[1] == x)
-				x = x->p;
-			return x->p;//x是最大节点时p为nil_
-		}
-		LinkType prevNode(LinkType x) const
-		{
-			if (x == nil_)//end()的前一个
-				return maxChild();
-			if (x->ch[0] != nil_)
-				return extremeChild(x->ch[0], 1);
-			while (x->p->ch[0] == x)
-				x = x->p;
-			return x->p;//x是最小节点时p为nil_
-		}
-
-		NodePair findNode(const KeyType &key, LinkType x = nullptr) //从x开始搜
-		{
-			if (!x) x = root_;
-			LinkType p = nil_;
-			while (x != nil_)
-			{
-				if (comp(x->key(), key))
-					p = x, x = x->ch[1];
-				else if (!comp(key, x->key()))
-					return { x,p };
-				else
-					p = x, x = x->ch[0];
-			}
-			return { nullptr,p };
-		}
-		int lower(const KeyType &rend, bool afterEqual) const
-		{
-			LinkType x = root_;
-			int cnt = 0;
-			while (x != nil_)
-			{
-				if (comp(x->key(), rend) || (afterEqual && !comp(rend, x->key())))
-				{
-					cnt += x->ch[0]->sz + 1;
-					x = x->ch[1];
-				}
-				else
-					x = x->ch[0];
-			}
-			return cnt;
-		}
-		LinkType kth(int k) //k>size() or k<1时自动返回end()
-		{
-			LinkType x = root_;
-			while (x != nil_)
-			{
-				if (x->ch[0]->sz + 1 == k)
-					return x;
-				if (x->ch[0]->sz + 1 < k)
-				{
-					k -= x->ch[0]->sz + 1;
-					x = x->ch[1];
-				}
-				else
-					x = x->ch[0];
-			}
-			return nil_;
-		}
 		LinkType insert(const ValueType &value)
 		{
 			NodePair np = findNode(Traits::KeyOf(value));
@@ -217,9 +147,11 @@ namespace ds
 			else
 			{
 				const int argmax = z->ch[0]->h > z->ch[1]->h ? 0 : 1;
-				y = extremeChild(z->ch[argmax], !argmax);  //前驱 or 后继
+				y = TreeUtil::extremeChild(z->ch[argmax], nil_, !argmax);  //前驱 or 后继
 				x = y->ch[argmax];
-				if (y->p != z)  //y->p==z时，x是一起被带过来的，!=时，y被剥离出来，x留在原地
+				if (y->p == z)
+					x->p = y; //这一步不是多余的!!!如果x是nil_，x->p显然不一定是y
+				else
 				{
 					LinkType tmpy = y;
 					while (tmpy != z)
@@ -227,22 +159,21 @@ namespace ds
 						--tmpy->sz;
 						tmpy = tmpy->p;
 					}
-					transplant(y, x);
-					y->ch[argmax] = z->ch[argmax]; //把y剥离出来，安到z的位置
+					transplant(y, y->ch[argmax]);
+					y->ch[argmax] = z->ch[argmax];
 					y->ch[argmax]->p = y;
 				}
 				transplant(z, y);
 				y->ch[!argmax] = z->ch[!argmax], y->ch[!argmax]->p = y;
 				updH(y), updSz(y);
 			}
-			if (z == root_)
-				root_ = nil_;
 			delete z;
 			//现在，x->p是唯一可能破坏高度平衡的节点
 			while (x != root_)
 			{
 				if (x != nil_)
 					updH(x);
+				
 				if (!isBalance(x->p))
 				{
 					bool xSide = x == x->p->ch[1], sameSide = true;
@@ -260,22 +191,20 @@ namespace ds
 						rotate(x);//此时不用更新
 				}
 				else
-					x = x->p;
+					x = x->p;	
 			}
-			updH(root_);
 		}
-		int height() const { return root_->h; }
-		LinkType minChild() const { return extremeChild(root_, 0); }
-		LinkType maxChild() const { return extremeChild(root_, 0); }
+		LinkType minChild() const { return TreeUtil::extremeChild(root_, nil_, 0); }
+		LinkType maxChild() const { return TreeUtil::extremeChild(root_, nil_, 1);}
 		int size() const { return root_->sz; }
 		LinkType nil() const { return nil_; }
-		void clear() { clear(root_); }
+		void clear() { TreeUtil::clear(root_, nil_); }
 		void swap(AVL &rhs) noexcept
 		{
 			std::swap(root_, rhs.root_);
 			std::swap(nil_, rhs.nil_);
 		}
-		AVL(KeyCompare comp) :comp(comp), nil_(new Node)
+		AVL(KeyCompare comp = KeyCompare()) :comp(comp), nil_(new Node)
 		{
 			root_ = nil_;
 			root_->p = root_->ch[0] = root_->ch[1] = nil_;
@@ -290,9 +219,8 @@ namespace ds
 			}
 			else
 			{
-				root_ = new Node(nil_, nil_, nil_, ValueType(rhs.root_->value));
-				root_->sz = rhs.root_->sz;
-				cpy(root_, rhs.root_, rhs.nil_);
+				root_ = rhs.root_->clone(nil_, nil_, nil_);
+				TreeUtil::cpy(root_, nil_, rhs.root_, rhs.nil_);
 			}
 		}
 		AVL& operator=(const AVL &rhs)
@@ -326,7 +254,7 @@ namespace ds
 		}
 		~AVL()
 		{
-			clear(root_);
+			clear();
 			delete nil_;
 		}
 	};

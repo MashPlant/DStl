@@ -1,9 +1,5 @@
-// DataStructure.cpp : 定义控制台应用程序的入口点。
-//
-
 #include "stdafx.h"
-/*#include <algorithm>
-#include <ctime>
+/*#include <ctime>
 #include "Map.h"
 #include "Algorithm.h"
 #include <map>
@@ -11,54 +7,78 @@
 #include "AVL.h"
 #include "Splay.h"
 #include "Util.h"
+#include "HashMap.h"
+#include <unordered_map>
+#include <type_traits>
+#include "RBTreeArray.h"
+#include <iostream>
+#include "SkipList.h"
+#include "Treap.h"
 using namespace std;
 using namespace ds;
 
-const int maxn = 1e6;
-int input[maxn * 2];
+const int maxn = 2e6;
+int input[maxn];
+
 template <typename M>
-void test()
+M *create() { return new M; }
+
+template<>
+Map<int, int, less<int>, RBTreeArray>*
+create<Map<int, int, less<int>, RBTreeArray>>()
 {
-	M m;
-	clock_t beg = clock();
-	for (int i = 0; i<maxn; ++i)
-		m.insert({ input[i], 0 });
-	for (int j = 0; j < 2; ++j)
-		for (int i = 0; i < maxn; ++i)
-			m.find(input[i]);
-	for (int i = 0; i < maxn / 2; ++i)
-		m.erase(input[i]);
+	return new Map<int, int, less<int>, RBTreeArray>(malloc(int(5e8)));
+}
+template <typename M>
+void test(const string &name)
+{
+	M *pm = create<M>();
+	cout << name << "\n";
+	clock_t beg[3] = { clock() };
 	for (int i = 0; i < maxn; ++i)
-		m.insert({ 2 * input[i], 0 });
-	for (int i = 0; i < maxn * 2; ++i)
-		m.find(input[i]);
-	for (int i = 0; i < maxn * 2; ++i)
-		m.erase(input[i]);
-	cout << clock() - beg << endl;
+		pm->insert({ input[i] ,0 });
+	cout << "insert :" << -beg[0] + (beg[1] = clock()) << "\n";
+	for (int i = 0; i < maxn; ++i)
+		pm->find(input[i]);
+	cout << "find :" << -beg[1] + (beg[2] = clock()) << "\n";
+	for (int i = 0; i < maxn; ++i)
+		pm->erase(input[i]);
+	cout << "erase :" << -beg[2] + clock() << "\n";
+	cout << "all :" << clock() - beg[0] << "\n";
 }
 
 int main()
 {
-	for (int i = 0; i < maxn * 2; ++i)
-		input[i] = rani(1, 1e9);
+	for (int i = 0; i < maxn; ++i)
+		input[i] = i;
+	random_shuffle(input, input + maxn);
 	cout << "press to begin\n";
 	getchar();
-	test<map<int, int>>();
-	test<Map<int, int>>();
-	test<BTree<int, int, 40>>();
-	test<Map<int, int, less<int>, AVL>>();
-	test<Map<int, int, less<int>, Splay>>();
+	
+	test<map<int, int>>("stl map");
+	test<Map<int, int>>("RBTree");
+	test<Map<int, int, less<int>, Treap>>("Treap");
+	test<Map<int, int, less<int>, AVL>>("AVL");
+	test<BTree<int, int, 40>>("BTree");
+	
+	//test<Map<int, int, less<int>, Splay>>("Splay");
+	//test<HashMap<int, int>>("HashMap");
+	//test<SkipListMap<int, int>>("skip list");
 	getchar();
 }*/
-/* kth
-const int maxn = 20000;
+// kth
+/*int main()
+{
+const int maxn = 3e5;
 Map<int, int> m;
 Map<int, int, less<int>, AVL> avlm;
+BTree<int, int, 2> bt;
 for (int i = 0; i < maxn; ++i)
 {
 int ran = rani(1, maxn);
 m.insert(ran, 0);
 avlm.insert(ran, 0);
+bt.insert(ran, 0);
 }
 
 for (int i = 0; i < maxn; ++i)
@@ -66,6 +86,7 @@ for (int i = 0; i < maxn; ++i)
 int ran = rani(1, maxn);
 m.erase(ran);
 avlm.erase(ran);
+bt.erase(ran);
 }
 freopen("mp.txt", "w", stdout);
 for (int i = 1; i <= m.size(); ++i)
@@ -73,7 +94,12 @@ cout << m.kth(i)->first << ' ';
 freopen("avlmp.txt", "w", stdout);
 for (int i = 1; i <= avlm.size(); ++i)
 cout << avlm.kth(i)->first << ' ';
- */
+freopen("bt.txt", "w", stdout);
+for (int i = 1; i <= bt.size(); ++i)
+cout << bt.kth(i)->first << ' ';
+}*/
+
+
 /*内存泄漏检验
 {
 Map<int, int> m;

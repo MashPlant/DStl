@@ -1,5 +1,7 @@
 #pragma once
 #include <utility>
+#include <cassert>
+
 namespace ds
 {
 	template <typename Traits>
@@ -23,6 +25,12 @@ namespace ds
 			ValueType &operator*() { return value; }
 			ValueType *operator->() { return &(operator*()); }
 			bool isRight()const { return this == p->ch[1]; }
+			LinkType clone(LinkType p, LinkType l, LinkType r) const
+			{
+				LinkType ret = new Node(p, l, r, ValueType(value));
+				ret->sz = sz;
+				return ret;
+			}
 			Node() = default;
 			Node(LinkType p, LinkType l, LinkType r, const ValueType &value) :p(p), value(value), sz(1) { ch[0] = l, ch[1] = r; }
 		};
@@ -64,30 +72,19 @@ namespace ds
 			else
 				dp->ch[dest == dp->ch[1]] = sour;
 		}
-		LinkType extremeChild(LinkType x, const int what) const
-		{
-			while (x->ch[what] != nil_)
-				x = x->ch[what];
-			return x;
-		}
 	public:
-		LinkType nextNode(LinkType x) const
+		LinkType nextNode(Node *x)const { return TreeUtil::nextNode(x, nil_); }
+		LinkType prevNode(Node *x)const { return TreeUtil::prevNode(x, nil_, root_); }
+		LinkType kth(const int k) //Splay的顺序统计操作必须进行splay，否则会卡链
 		{
-			if (x->ch[1] != nil_)
-				return extremeChild(x->ch[1], 0);
-			while (x->p->ch[1] == x)
-				x = x->p;
-			return x->p;//x是最大节点时p为nil_
+			LinkType ret = TreeUtil::kth(root_, nil_, k);
+			splay(nil_, ret);
+			return ret;
 		}
-		LinkType prevNode(LinkType x) const
+		int lower(const KeyType &key, const bool afterEqual) 
 		{
-			if (x == nil_)//end()的前一个
-				return maxChild();
-			if (x->ch[0] != nil_)
-				return extremeChild(x->ch[0], 1);
-			while (x->p->ch[0] == x)
-				x = x->p;
-			return x->p;//x是最小节点时p为nil_
+			findNode(key);
+			return TreeUtil::lower(key, root_, nil_, afterEqual, comp);
 		}
 		NodePair findNode(const KeyType &key,const bool doSplay = true) //从x开始搜
 		{
@@ -140,9 +137,11 @@ namespace ds
 				x = z->ch[0], transplant(z, x);
 			else
 			{
-				y = extremeChild(z->ch[1], 0); 
+				y = TreeUtil::extremeChild(z->ch[1], nil_, 0);
 				x = y->ch[1];
-				if (y->p != z)  
+				if (y->p == z)
+					x->p = y;
+				else
 				{
 					LinkType tmpy = y;
 					while (tmpy != z)
@@ -159,16 +158,17 @@ namespace ds
 				updSz(y);
 			}
 		}
-		LinkType minChild() const { return extremeChild(root_, 0); }
-		LinkType maxChild() const { return extremeChild(root_, 0); }
+		LinkType minChild() const { return TreeUtil::extremeChild(root_, nil_, 0); }
+		LinkType maxChild() const { return TreeUtil::extremeChild(root_, nil_, 1); }
 		int size() const { return root_->sz; }
-		LinkType nil()const { return nil_; }
-		Splay(KeyCompare comp) :comp(comp), nil_(new Node)
+		LinkType nil() const { return nil_; }
+		void clear() { TreeUtil::clear(root_, nil_); }
+		Splay(KeyCompare comp = KeyCompare()) :comp(comp), nil_(new Node)
 		{
 			root_ = nil_;
 			root_->p = root_->ch[0] = root_->ch[1] = nil_;
 		}
-		Splay(const Splay&rhs) = delete;//为了保证Splay的简洁(滑稽)，不做拷贝控制
+		Splay(const Splay&rhs) = delete;//为了保证Splay的简洁(滑稽)，不做拷贝控制和析构
 		Splay& operator=(const Splay&rhs) = delete;
 	};
 }

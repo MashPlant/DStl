@@ -7,10 +7,11 @@
 #include <ctime>
 #include "Algorithm.h"
 #include "TimSort.h"
+#include "BTree.h"
 using namespace std;
 using namespace ds;
 
-const long long maxn = 1e8;
+const long long maxn = 2e7;
 void stable()
 {
 	struct A
@@ -37,7 +38,6 @@ void stable()
 }
 int main()
 {
-	//stable();
 	static int a[maxn];
 	static int input[maxn];
 	for (int i = 0; i < maxn; ++i)
@@ -46,45 +46,45 @@ int main()
 	cout << "press to begin" << endl;
 	getchar();
 
-	for (int i = 0; i < maxn; ++i)
-		a[i] = input[i];
+	memcpy(a, input, sizeof input);
 	beg = clock();
 	std::sort(a, a + maxn);
 	cout << clock() - beg << endl;
 	cout << is_sorted(a, a + maxn) << endl;
 
-	for (int i = 0; i < maxn; ++i)
-		a[i] = input[i];
+	memcpy(a, input, sizeof input);
 	beg = clock();
 	std::stable_sort(a, a + maxn);
 	cout << clock() - beg << endl;
 	cout << is_sorted(a, a + maxn) << endl;
 
-	for (int i = 0; i < maxn; ++i)
-		a[i] = input[i];
+	memcpy(a, input, sizeof input);
 	beg = clock();
 	ds::sort(a, a + maxn);
 	cout << clock() - beg << endl;
 	cout << is_sorted(a, a + maxn) << endl;
 
-	for (int i = 0; i < maxn; ++i)
-		a[i] = input[i];
+	memcpy(a, input, sizeof input);
 	beg = clock();
 	ds::radixSort(a, a + maxn);
 	cout << clock() - beg << endl;
 	cout << is_sorted(a, a + maxn) << endl;
-
-	for (int i = 0; i < maxn; ++i)
-		a[i] = input[i];
+	
+	memcpy(a, input, sizeof input);
 	beg = clock();
-	ds::stable_sort(a, a + maxn);
-	cout << clock() - beg << endl;
-	cout << is_sorted(a, a + maxn) << endl;
-
-	for (int i = 0; i < maxn; ++i)
-		a[i] = input[i];
-	beg = clock();
-	TimSort<int *>(a, a + maxn).sort();
+	BTree<int, int, 40> bt;
+	for (int i=0;i<maxn;++i)
+	{
+		int *v = bt.find(i);
+		if (v)++*v;
+		else bt.insert({ i,1 });
+	}
+	int pos = 0;
+	bt.inorderWalk([&](int x,int n)
+	{
+		for (int i = 0; i < n; ++i)
+			a[pos++] = x;
+	});
 	cout << clock() - beg << endl;
 	cout << is_sorted(a, a + maxn) << endl;
 	getchar();

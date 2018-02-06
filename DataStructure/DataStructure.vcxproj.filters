@@ -43,6 +43,9 @@
     <Filter Include="头文件\AssociativeContainer\对拍">
       <UniqueIdentifier>{acf24087-7a5d-48cf-868f-4eb50594a5e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\AssociativeContainer\Tree">
+      <UniqueIdentifier>{fbfe55cc-e783-4e1d-9104-486d588ffd08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -72,9 +75,6 @@
     <ClInclude Include="List.h">
       <Filter>头文件\List</Filter>
     </ClInclude>
-    <ClInclude Include="Map-List.h">
-      <Filter>头文件\AssociativeContainer</Filter>
-    </ClInclude>
     <ClInclude Include="Map.h">
       <Filter>头文件\AssociativeContainer</Filter>
     </ClInclude>
@@ -99,14 +99,38 @@
     <ClInclude Include="NaiveDB.h">
       <Filter>头文件\AssociativeContainer</Filter>
     </ClInclude>
-    <ClInclude Include="RBTree.h">
-      <Filter>头文件\AssociativeContainer</Filter>
-    </ClInclude>
     <ClInclude Include="AVL.h">
-      <Filter>头文件\AssociativeContainer</Filter>
+      <Filter>头文件\AssociativeContainer\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="RBTree.h">
+      <Filter>头文件\AssociativeContainer\Tree</Filter>
     </ClInclude>
     <ClInclude Include="Splay.h">
+      <Filter>头文件\AssociativeContainer\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeUtil.h">
+      <Filter>头文件\AssociativeContainer\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Map-List.h">
       <Filter>头文件\AssociativeContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="SkipList.h">
+      <Filter>头文件\AssociativeContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="IntrusiveList.h">
+      <Filter>头文件\List</Filter>
+    </ClInclude>
+    <ClInclude Include="RBTreeArray.h">
+      <Filter>头文件\AssociativeContainer\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="String.h">
+      <Filter>头文件\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Stack.h">
+      <Filter>头文件\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="Treap.h">
+      <Filter>头文件\AssociativeContainer\Tree</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -124,7 +124,6 @@ namespace ds
 			iterator(Node *n, HashMap *m,int w) :self_(n), container_(m),where_(w) {}
 		};
 	private:
-		
 		int slotNum_;
 		int size_ = 0;
 		float maxLoadFactor_ = 1.0f;
@@ -173,11 +172,12 @@ namespace ds
 				return np.first->val();
 			return insert(key, mapped_type())->val();
 		}
-		V *find(const K &key)
+		iterator find(const K &key)
 		{
-			if (Node *n = findNode(hashCode(key), key).first)
-				return &(n->val());
-			return nullptr;
+			const int h = hashCode(key);
+			if (Node *n = findNode(h, key).first)
+				return iterator(n, this, h);
+			return end();
 		}
 		Node *insert(const K &key, const V &val) //不检查是否已经存在
 		{

@@ -4,13 +4,20 @@
 #include <functional>
 #include <iostream>
 #include <ctime>
+#include <ostream>
 using std::string;
 namespace ds
 {
-	template<typename K>
-	void print(const K &lst)
+	template <typename First,typename Second>
+	std::ostream& operator<<(std::ostream &os,const std::pair<First,Second> &pr)
 	{
-		for (const auto &i : lst)
+		os << pr.first << ' ' << pr.second << ' ';
+		return os;
+	}
+	template<typename K>
+	void print(K &&lst)
+	{
+		for (auto &i : lst)
 			std::cout << i << ' ';
 		std::cout << std::endl;
 	}
@@ -57,9 +64,9 @@ namespace ds
 		scanf("%s", buf);
 		return buf;
 	}
-	inline int rani(int l, int r)
+	inline uint32_t rawRani()
 	{
-		static int seed = time(0);
+		static int seed = time(nullptr);
 		auto xorshift32 = [&]()->uint32_t 
 		{ 	
 			/* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */ 	
@@ -69,8 +76,9 @@ namespace ds
 			x ^= x << 5; 	
 			return seed = x;
 		};
-		return xorshift32() % (r - l + 1) + l;
+		return xorshift32();
 	}
+	inline int rani(int l, int r) { return rawRani() % (r - l + 1) + l; }
 	template <typename K>
 	K max(const K &lhs, const K &rhs) { return lhs < rhs ? rhs : lhs; }
 	template <typename K>
