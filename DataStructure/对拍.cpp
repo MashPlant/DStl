@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-/*#include "Algorithm.h"
-#include <iostream>
+#include "Algorithm.h"
+/*#include <iostream>
 #include "Util.h"
 #include "Map.h"
 #include <map>
@@ -11,6 +11,7 @@
 #include "BTree.h"
 #include "RBTreeArray.h"
 #include "Treap.h"
+#include "vEBTree.h"
 using namespace std;
 using namespace ds;
 
@@ -18,26 +19,29 @@ using namespace ds;
 int main()
 {
 	Map<int, int> mp;
-	Map<int, int, less<int>, Treap> tp;
+	vEBTree veb(20); //2^20
 	const int maxn = 2e5;
 	for (int i = 1; i < maxn; ++i)
 	{
 		int x = rani(1, maxn), y = rani(1, maxn);
 		mp.insert({ x, y });
-		tp.insert({ x,y });
+		veb.put(x);
 	}
+	
 	for (int i = 1; i < maxn; ++i)
 	{
 		int x = rani(1, maxn);
 		mp.erase(x);
-		tp.erase(x);
+		veb.del(x);
 	}
 	freopen("mp.txt", "w", stdout);
 	for (int k = 1; k <= mp.size(); ++k)
 		cout << mp.kth(k)->first << ' ';
-	freopen("tp.txt", "w", stdout);
-	for (int k = 1; k <= tp.size(); ++k)
-		cout << tp.kth(k)->first << ' ';
+	freopen("veb.txt", "w", stdout);
+	for (int x = veb.findMin(); ~x; x = veb.findNext(x))
+	{
+		cout << x << ' ';
+	}
 	//getchar();
 }*/
 

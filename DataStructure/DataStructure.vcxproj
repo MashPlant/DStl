@@ -164,6 +164,7 @@
     <ClInclude Include="TreeUtil.h" />
     <ClInclude Include="Trie.h" />
     <ClInclude Include="Util.h" />
+    <ClInclude Include="vEBTree.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>

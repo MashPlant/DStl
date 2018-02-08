@@ -17,7 +17,7 @@
 using namespace std;
 using namespace ds;
 
-const int maxn = 2e6;
+const int maxn = 5e6;
 int input[maxn];
 
 template <typename M>

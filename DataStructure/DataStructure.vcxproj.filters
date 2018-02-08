@@ -132,6 +132,9 @@
     <ClInclude Include="Treap.h">
       <Filter>头文件\AssociativeContainer\Tree</Filter>
     </ClInclude>
+    <ClInclude Include="vEBTree.h">
+      <Filter>头文件\AssociativeContainer\Tree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
