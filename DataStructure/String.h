@@ -22,7 +22,7 @@ namespace ds
 			return nxt;
 		}
 	public:
-		const static int npos = (1 << 31) - 1;
+		const static int npos = ~(1 << 31);
 		typedef const char * iterator;
 		char operator[](int k)const { return first[k]; }
 		iterator begin() const { return first; }
@@ -132,7 +132,7 @@ namespace ds
 			return is;
 		}
 	public:
-		const static int npos = (1 << 31) - 1;
+		const static int npos = ~(1 << 31);
 		String(const char *ptr)
 		{
 			const int len = strlen(ptr);

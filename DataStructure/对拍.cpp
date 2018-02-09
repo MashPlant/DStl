@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "Algorithm.h"
-/*#include <iostream>
+/*#include "Algorithm.h"
+#include <iostream>
 #include "Util.h"
 #include "Map.h"
 #include <map>
@@ -12,27 +12,29 @@
 #include "RBTreeArray.h"
 #include "Treap.h"
 #include "vEBTree.h"
+#include "vEBTreee-template.h"
 using namespace std;
 using namespace ds;
 
 //正确性检验
+vEBTree<20> veb; //2^20
 int main()
 {
 	Map<int, int> mp;
-	vEBTree veb(20); //2^20
-	const int maxn = 2e5;
+	
+	const int maxn = 4e5;
 	for (int i = 1; i < maxn; ++i)
 	{
 		int x = rani(1, maxn), y = rani(1, maxn);
 		mp.insert({ x, y });
-		veb.put(x);
+		veb.insert(x, true);
 	}
 	
 	for (int i = 1; i < maxn; ++i)
 	{
 		int x = rani(1, maxn);
 		mp.erase(x);
-		veb.del(x);
+		veb.erase(x, false);
 	}
 	freopen("mp.txt", "w", stdout);
 	for (int k = 1; k <= mp.size(); ++k)

@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 #include <utility>
 #include <algorithm>
 
@@ -7,15 +7,23 @@ namespace ds
 	template <int Size> //最终vEB树的容量是2^Size
 	class vEBTree
 	{
-	private:
-		static int countZero(int n) //返回一个形如0...010..0的数右侧的0的个数
+	public:
+		static int countZero(int i) //返回一个形如0...010..0的数右侧的0的个数
 		{
+			
+#if __GNUC__
+			//gcc内置
+			return __builtin_ctz(i);
+#else
 			int cnt = 0;
-			while (n >>= 1)
+			while (i >>= 1)
 				++cnt;
 			return cnt;
+#endif
+
+			
 		}
-		/*
+		
 		要实现vEB Map有点困难(应该不是C++的锅)
 		每个节点的min都会配一个value，summary不用配value，size=2的节点需要两个value
 		要么统一配两个(浪费空间)，要么用指针(浪费空间&时间)，要么用模板
@@ -28,7 +36,7 @@ namespace ds
 		template<int N>
 		struct Node<N,true> {...}
 		我也不知道这样写行不行，懒得试了
-		*/
+		
 		struct Node
 		{
 			static int hiSqrt[32], loSqrt[32];
@@ -202,4 +210,4 @@ namespace ds
 	int vEBTree<Size>::Node::hiSqrt[32];
 	template <int Size>
 	int vEBTree<Size>::Node::loSqrt[32];
-}
+}*/

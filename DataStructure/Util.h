@@ -8,6 +8,9 @@
 using std::string;
 namespace ds
 {
+	template<typename K>
+	void TypeChecker(const K &k);
+
 	template <typename First,typename Second>
 	std::ostream& operator<<(std::ostream &os,const std::pair<First,Second> &pr)
 	{
@@ -80,9 +83,27 @@ namespace ds
 	}
 	inline int rani(int l, int r) { return rawRani() % (r - l + 1) + l; }
 	template <typename K>
-	K max(const K &lhs, const K &rhs) { return lhs < rhs ? rhs : lhs; }
+	const K &max(const K &lhs, const K &rhs) { return lhs < rhs ? rhs : lhs; }
 	template <typename K>
-	K min(const K &lhs, const K &rhs) { return lhs < rhs ? lhs : rhs; }
+	const K &min(const K &lhs, const K &rhs) { return lhs < rhs ? lhs : rhs; }
+
+	template <typename K>
+	struct Max
+	{
+		typedef K result_type;
+		typedef K first_argument_type;
+		typedef K second_argument_type;
+		const K & operator()(const K &lhs, const K &rhs) const { return max<K>(lhs, rhs); }
+	};
+
+	template <typename K>
+	struct Min
+	{
+		typedef K result_type;
+		typedef K first_argument_type;
+		typedef K second_argument_type;
+		const K & operator()(const K &lhs, const K &rhs) const { return min<K>(lhs, rhs); }
+	};
 	/*template <typename V1,typename V2>
 	bool operator==( V1& v1, V2&v2)
 	{

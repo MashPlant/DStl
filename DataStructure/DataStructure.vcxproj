@@ -153,6 +153,8 @@
     <ClInclude Include="PriorityQueue.h" />
     <ClInclude Include="RBTree.h" />
     <ClInclude Include="RBTreeArray.h" />
+    <ClInclude Include="SegmentTree.h" />
+    <ClInclude Include="SegmentTreeUtil.h" />
     <ClInclude Include="SkipList.h" />
     <ClInclude Include="Splay.h" />
     <ClInclude Include="Stack.h" />
@@ -165,12 +167,12 @@
     <ClInclude Include="Trie.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="vEBTree.h" />
+    <ClInclude Include="vEBTree-template.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="对拍.cpp" />
     <ClCompile Include="DataStructure.cpp" />
-    <ClCompile Include="GenData.cpp" />
     <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp" />
     <ClCompile Include="LuoguP3371Dijkstra.cpp" />
     <ClCompile Include="LuoguP3377LeftistTree.cpp" />
@@ -184,9 +186,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="stlset.cpp" />
-    <ClCompile Include="Test.cpp" />
-    <ClCompile Include="trie.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

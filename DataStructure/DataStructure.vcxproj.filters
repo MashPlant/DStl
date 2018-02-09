@@ -19,9 +19,6 @@
     <Filter Include="头文件\Trie">
       <UniqueIdentifier>{e1a8e2bd-9273-4747-af3d-6e8885afe96f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Trie\Test">
-      <UniqueIdentifier>{fbd8e177-0ae8-492c-a614-005558354bcc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\Deque">
       <UniqueIdentifier>{1348384a-78a2-4b7b-9378-513d9a115116}</UniqueIdentifier>
     </Filter>
@@ -45,6 +42,9 @@
     </Filter>
     <Filter Include="头文件\AssociativeContainer\Tree">
       <UniqueIdentifier>{fbfe55cc-e783-4e1d-9104-486d588ffd08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\SegmentTree">
+      <UniqueIdentifier>{2123fbab-8470-4d1f-b93e-b3b389fcb259}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +135,15 @@
     <ClInclude Include="vEBTree.h">
       <Filter>头文件\AssociativeContainer\Tree</Filter>
     </ClInclude>
+    <ClInclude Include="vEBTree-template.h">
+      <Filter>头文件\AssociativeContainer\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="SegmentTree.h">
+      <Filter>头文件\SegmentTree</Filter>
+    </ClInclude>
+    <ClInclude Include="SegmentTreeUtil.h">
+      <Filter>头文件\SegmentTree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -142,18 +151,6 @@
     </ClCompile>
     <ClCompile Include="DataStructure.cpp">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="GenData.cpp">
-      <Filter>头文件\Trie\Test</Filter>
-    </ClCompile>
-    <ClCompile Include="stlset.cpp">
-      <Filter>头文件\Trie\Test</Filter>
-    </ClCompile>
-    <ClCompile Include="trie.cpp">
-      <Filter>头文件\Trie\Test</Filter>
-    </ClCompile>
-    <ClCompile Include="Test.cpp">
-      <Filter>头文件\Deque</Filter>
     </ClCompile>
     <ClCompile Include="LuoguP3377LeftistTree.cpp">
       <Filter>头文件\Heap</Filter>
