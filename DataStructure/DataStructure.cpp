@@ -1,57 +1,31 @@
 #include "stdafx.h"
-/*#include "IntrusiveList.h"
 #include <iostream>
 #include "Util.h"
-#include "Map.h"
-#include "RBTreeArray.h"
-#include "Stack.h"
-#include "String.h"
-#include "Treap.h"
-#include "SkipList.h"
-#include "vEBTree.h"
-#include "vEBTree-template.h"
-#include "SegmentTree.h"
+#include "Complexity.h"
+#include <algorithm>
+#include "Algorithm.h"
+#include "BITTree.h"
 using namespace std;
 using namespace ds;
-const int maxn = 5e6;
-int input[maxn];
-clock_t beg[4] = { clock() };
-vEBTree<23> veb;
+const int maxn = 2e6;
+int a[maxn];
 int main()
 {
-	
-	cout << "create :" << -beg[0] + clock() << "\n";
-
 	for (int i = 0; i < maxn; ++i)
-		input[i] = i;
-	random_shuffle(input, input + maxn);
-
-	beg[1] = clock();
-	for (int i = 0; i < maxn; ++i)
-		veb.insert(input[i]);
-	cout << "insert :" << -beg[1] + (beg[2] = clock()) << "\n";
-	for (int i = 0; i < maxn; ++i)
-	{
-		bool b = veb.exist(input[i]);
-		if (rawRani() == 0) //避免编译器把这整个循环给优化掉了
-			cout << b;
-	}
-	cout << "find :" << -beg[2] + (beg[3] = clock()) << "\n";
-	for (int i = 0; i < maxn; ++i)
-		veb.erase(input[i]);
-	cout << "erase :" << -beg[3] + clock() << "\n";
-	cout << "all :" << clock() - beg[0] << "\n"; 
-	Vector<int> vec = { 1,2,3,4,5 };
-	SegmentTree<int, plus<int>, 5> seg = Seg::InputIter(4);
-	seg.rangeAdd(1, 5, 1);
-	for (int i = 1; i <= 5; ++i)
-		for (int j = i; j <= 5; ++j)
-			cout << i << ' ' << j << ' ' << seg.query(i, j) << endl;
-	seg.rangeAdd(1, 5, -1);
-	for (int i = 1; i <= 5; ++i)
-		for (int j = i; j <= 5; ++j)
-			cout << i << ' ' << j << ' ' << seg.query(i, j) << endl;
+		a[i] = i;
+	auto f1 = [](int n) {std::sort(a, a + n); };
+	auto f2 = [](int n) {ds::radixSort(a, a + n); };
+	auto p = [](int n) {random_shuffle(a, a + n); };
+	const int start = 1e5, step = 1e5;
+	array<int, (maxn - start) / step> arr;
+	arr[0] = start;
+	for (int i = 1; i < arr.size(); ++i)
+		arr[i] = arr[i - 1] + step;
+	auto res = Complexity::autoCalc(f1, p, arr, Complexity::nlgn);
+	cout << res.k << ' ' << res.b << ' ' << res.R2 << endl;
+	res = Complexity::autoCalc(f2, p, arr, Complexity::n);
+	cout << res.k << ' ' << res.b << ' ' << res.R2 << endl;
+	//运行，得到结果发现b<0，这可能是动态内存申请导致的
 	getchar();
-	return 0;
-}*/
+}
 

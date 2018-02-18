@@ -27,7 +27,10 @@ namespace ds
 			void operator-=(int d) { self->add(pos, -d); }
 			int operator-(const Reference &rhs) const { return self->query(rhs.pos, pos); }
 		};
+	protected:
+		int n;
 	public:
+		BIT(int n = N) :n(n) {}
 		int sum(int pos) const
 		{
 			int ret = 0;
@@ -45,7 +48,7 @@ namespace ds
 		}
 		void add(int pos,int d)
 		{
-			while (pos <= N)
+			while (pos <= n)
 			{
 				arr[pos] += d;
 				pos += pos & -pos;

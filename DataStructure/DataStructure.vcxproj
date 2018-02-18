@@ -143,6 +143,7 @@
     <ClInclude Include="BIT.h" />
     <ClInclude Include="BITTree.h" />
     <ClInclude Include="BTree.h" />
+    <ClInclude Include="Complexity.h" />
     <ClInclude Include="Deque.h" />
     <ClInclude Include="FibHeap.h" />
     <ClInclude Include="HashMap.h" />
@@ -151,9 +152,11 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="Map-List.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="MemPool.h" />
     <ClInclude Include="NaiveDB.h" />
     <ClInclude Include="PriorityQueue.h" />
+    <ClInclude Include="Profiler.h" />
     <ClInclude Include="Ptr32.h" />
     <ClInclude Include="RBTree.h" />
     <ClInclude Include="RBTreeArray.h" />

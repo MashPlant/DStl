@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "MemPool.h"
+/*#include "MemPool.h"
 #include <iostream>
 #include <list>
 #include "SharedPtr.h"
@@ -55,7 +55,4 @@ void foo(K k)
 {
 	cout << k << endl;
 }
-int main()
-{
-	
-}
+*/

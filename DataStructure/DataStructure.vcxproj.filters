@@ -49,6 +49,9 @@
     <Filter Include="头文件\Memory">
       <UniqueIdentifier>{dc602a51-74e1-42a6-b929-344538c3d71f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Profiler">
+      <UniqueIdentifier>{dc57ee6e-635b-4c94-b2c4-14d74246bc48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -161,6 +164,15 @@
     </ClInclude>
     <ClInclude Include="BITTree.h">
       <Filter>头文件\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>头文件\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Complexity.h">
+      <Filter>头文件\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="Profiler.h">
+      <Filter>头文件\Profiler</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

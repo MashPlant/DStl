@@ -12,6 +12,7 @@ namespace ds
 	{
 		//所有函数的参数需自觉保证合法
 		//应该不会有人故意传个负数进来吧(滑稽)
+		BITTree(int n = N) :BIT(n) {}
 		int count(int x) const { return query(x, x); }
 		bool exist(int x) const { return count(x); }
 		void insert(int x)
@@ -29,9 +30,9 @@ namespace ds
 		int findNext(int x) const //lg^2
 		{
 			int base = sum(x);
-			if (sum(N) == base)
+			if (sum(n) == base)
 				return -1;
-			return ds::bisearch(x + 1, N + 1,
+			return ds::bisearch(x + 1, n + 1,
 				[=](int pos) {return sum(pos) > base; });
 			//这里会找到第一个[x+1,pos]间的和不为0的pos，于是的到后继
 		}
@@ -48,20 +49,20 @@ namespace ds
 		int findMin() const { return findNext(0); }
 		int findMax() const
 		{
-			if (exist(N))
-				return N;
-			return findPrev(N);
+			if (exist(n))
+				return n;
+			return findPrev(n);
 		}
 		int kth(int k) const
 		{
 			if (k > size() || k < 1)
 				return -1;
-			return ds::bisearch(1, N + 1
+			return ds::bisearch(1, n + 1
 				, [=](int pos) {return sum(pos) >= k; });
 		}
 		//不要求x存在
 		int rank(int x) const { return sum(x - 1) + 1; }
 		//求size需要lgN时间，最好保存下来
-		int size() const { return sum(N); }
+		int size() const { return sum(n); }
 	};
 }
