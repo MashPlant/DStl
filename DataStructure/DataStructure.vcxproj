@@ -140,6 +140,8 @@
   <ItemGroup>
     <ClInclude Include="Algorithm.h" />
     <ClInclude Include="AVL.h" />
+    <ClInclude Include="BIT.h" />
+    <ClInclude Include="BITTree.h" />
     <ClInclude Include="BTree.h" />
     <ClInclude Include="Deque.h" />
     <ClInclude Include="FibHeap.h" />
@@ -149,12 +151,15 @@
     <ClInclude Include="List.h" />
     <ClInclude Include="Map-List.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="MemPool.h" />
     <ClInclude Include="NaiveDB.h" />
     <ClInclude Include="PriorityQueue.h" />
+    <ClInclude Include="Ptr32.h" />
     <ClInclude Include="RBTree.h" />
     <ClInclude Include="RBTreeArray.h" />
     <ClInclude Include="SegmentTree.h" />
     <ClInclude Include="SegmentTreeUtil.h" />
+    <ClInclude Include="SharedPtr.h" />
     <ClInclude Include="SkipList.h" />
     <ClInclude Include="Splay.h" />
     <ClInclude Include="Stack.h" />
@@ -166,11 +171,12 @@
     <ClInclude Include="TreeUtil.h" />
     <ClInclude Include="Trie.h" />
     <ClInclude Include="Util.h" />
+    <ClInclude Include="vEBTree-pointer.h" />
     <ClInclude Include="vEBTree.h" />
-    <ClInclude Include="vEBTree-template.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="TestMemPool.cpp" />
     <ClCompile Include="对拍.cpp" />
     <ClCompile Include="DataStructure.cpp" />
     <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp" />

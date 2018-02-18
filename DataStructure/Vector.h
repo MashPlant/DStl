@@ -58,7 +58,7 @@ namespace ds
 	protected:
 		pointer arr_ = nullptr;
 		int size_ = 0;
-		int capacity_ = INITIAL_CAP;
+		int capacity_ = 0;
 		void mov(iterator dest, const_iterator first, const_iterator last) //放弃原来的
 		{
 			memmove(dest, first, (last - first) * sizeof(value_type));

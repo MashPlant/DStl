@@ -43,8 +43,11 @@
     <Filter Include="头文件\AssociativeContainer\Tree">
       <UniqueIdentifier>{fbfe55cc-e783-4e1d-9104-486d588ffd08}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\SegmentTree">
+    <Filter Include="头文件\Query">
       <UniqueIdentifier>{2123fbab-8470-4d1f-b93e-b3b389fcb259}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Memory">
+      <UniqueIdentifier>{dc602a51-74e1-42a6-b929-344538c3d71f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -132,17 +135,32 @@
     <ClInclude Include="Treap.h">
       <Filter>头文件\AssociativeContainer\Tree</Filter>
     </ClInclude>
+    <ClInclude Include="SegmentTree.h">
+      <Filter>头文件\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="SegmentTreeUtil.h">
+      <Filter>头文件\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="Ptr32.h">
+      <Filter>头文件\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="MemPool.h">
+      <Filter>头文件\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="SharedPtr.h">
+      <Filter>头文件\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="BIT.h">
+      <Filter>头文件\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="vEBTree-pointer.h">
+      <Filter>头文件\AssociativeContainer\Tree</Filter>
+    </ClInclude>
     <ClInclude Include="vEBTree.h">
       <Filter>头文件\AssociativeContainer\Tree</Filter>
     </ClInclude>
-    <ClInclude Include="vEBTree-template.h">
-      <Filter>头文件\AssociativeContainer\Tree</Filter>
-    </ClInclude>
-    <ClInclude Include="SegmentTree.h">
-      <Filter>头文件\SegmentTree</Filter>
-    </ClInclude>
-    <ClInclude Include="SegmentTreeUtil.h">
-      <Filter>头文件\SegmentTree</Filter>
+    <ClInclude Include="BITTree.h">
+      <Filter>头文件\Query</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="Mapn连.cpp">
       <Filter>头文件\Test</Filter>
+    </ClCompile>
+    <ClCompile Include="TestMemPool.cpp">
+      <Filter>头文件\Memory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

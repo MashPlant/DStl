@@ -14,10 +14,12 @@
 #include <iostream>
 #include "SkipList.h"
 #include "Treap.h"
+#include "vEBTree.h"
+#include "BITTree.h"
 using namespace std;
 using namespace ds;
 
-const int maxn = 5e6;
+const int maxn = 3e6;
 int input[maxn];
 
 template <typename M>
@@ -66,33 +68,32 @@ int main()
 	//test<SkipListMap<int, int>>("skip list");
 	getchar();
 }*/
-//veb
-/*
-const int maxn = 5e6;
+//veb & bit
+/*const int maxn = 3e6;
 int input[maxn];
 clock_t beg[4] = { clock() };
-vEBTree<23> veb;
-cout << "create :" << -beg[0] + clock() << "\n";
-
-for (int i = 0; i < maxn; ++i)
-input[i] = i;
-random_shuffle(input, input + maxn);
-
-beg[1] = clock();
-for (int i = 0; i < maxn; ++i)
-veb.insert(input[i]);
-cout << "insert :" << -beg[1] + (beg[2] = clock()) << "\n";
-for (int i = 0; i < maxn; ++i)
+//vEBTree<23> veb;
+BITTree<maxn> veb;
+int main()
 {
-bool b = veb.exist(input[i]);
-if (rawRani() == 0) //避免编译器把这整个循环给优化掉了
-cout << b;
-}
-cout << "find :" << -beg[2] + (beg[3] = clock()) << "\n";
-for (int i = 0; i < maxn; ++i)
-veb.erase(input[i]);
-cout << "erase :" << -beg[3] + clock() << "\n";
-cout << "all :" << clock() - beg[0] << "\n";*/
+	for (int i = 0; i < maxn; ++i)
+		input[i] = i + 1;
+	random_shuffle(input, input + maxn);
+
+	beg[1] = clock();
+	for (int i = 0; i < maxn; ++i)
+		veb.insert(input[i]);
+	cout << "insert :" << -beg[1] + (beg[2] = clock()) << "\n";
+	for (int i = 0; i < maxn; ++i)
+		bool b = veb.exist(input[i]);
+	cout << "find :" << -beg[2] + (beg[3] = clock()) << "\n";
+	for (int i = 0; i < maxn; ++i)
+		veb.erase(input[i]);
+	cout << "erase :" << -beg[3] + clock() << "\n";
+	cout << "all :" << clock() - beg[1] << "\n";
+	getchar();
+}*/
+
 // kth
 /*int main()
 {

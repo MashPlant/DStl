@@ -13,7 +13,7 @@ namespace ds
 			Node<K, Func,Left, Left + (Right - Left) / 2> left; //不使用堆式储存
 			Node<K, Func,Left + (Right - Left) / 2 + 1, Right> right;
 			template <typename Iter>
-			Node(Iter it) : label(K()), left(it), right(it)
+			Node(Iter &it) : label(K()), left(it), right(it)
 			{
 				key = Func()(left.key, right.key);
 			}
@@ -24,17 +24,25 @@ namespace ds
 			//最底层的叶子并不需要标签
 			K key;
 			template <typename Iter>
-			Node(Iter it) :key(*it++) {} //由于始终先初始化左边再初始化右边，故而初始化顺序与排列顺序相同
+			Node(Iter &it) :key(*it++) {} //由于始终先初始化左边再初始化右边，故而初始化顺序与排列顺序相同
 		};
 
 		struct InputIter 
 		{
 			//一个常见的上述Iter的形式
 			//注意模板参数N与实际范围n的区别，前者只是数据规模，不一定有那么多输入
-			//所以可以考虑:输入到达EOF之后全部返回0
-			int operator*() const { return ds::read(); }
-			InputIter operator++(int) const { return *this; }
-			InputIter operator++() const { return *this; }
+
+			//remain被所有InputIter共享，因为上面的构造是传引用
+			int remain;
+			InputIter(int n):remain(n){}
+			int operator*() const 
+			{
+				if (remain != -1)
+					return ds::read();
+				return 0;
+			}
+			InputIter operator++(int) { return --remain, *this; }
+			InputIter &operator++()  { return --remain,*this; }
 		};
 
 		template<typename K,typename Func>
