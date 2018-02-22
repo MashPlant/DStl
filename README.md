@@ -19,7 +19,11 @@
 
 对应stl中的list，基本上完全一致，带一个哨兵节点的双向队列。值得一提的是它的排序算法。不像某些语言(如Java)直接把链表转换成数组来排序(**注1**)(可以说是很流氓了)。这里的List::sort是模仿stl的实现，是一个非递归的归并排序，非常巧妙。
 
-2.树状数据结构
+1.4 [SkipList](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/SkipList.h)
+
+总有一些数据结构，跑的又慢，占空间又多，关键是也不好写。跳表可以说是典型代表了。听说在多线程下有很大用处，我不会，溜了溜了。
+
+2.平衡树
 
 2.0 [Map](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/Map.h)
 
@@ -41,58 +45,63 @@
 
 注意并不是所有树都支持所有操作，没有什么原理上的困难，主要是有些懒得写了。只保证RBTree和AVL支持所有操作。
 
-2.5
-
-[vEBTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/vEBTree.h)
+2.5 [vEBTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/vEBTree.h)
 
 只能存放一定范围内的整数。非常高效的数据结构，尤其在是利用了一些模板的技巧摆脱了指针之后。不与上面的那些兼容。
 
-2.6
-[BTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/BTree.h)
+2.6 [BTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/BTree.h)
 
 谁能想到B树跑的这么快呢?只有insert，find，erase的情况下比红黑树快一倍(包括我的红黑树(稍快一点点)和stl的红黑树)。不与上面的那些兼容。
 
 3.哈希表
 
-[HashMap](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/HashMap.h)
+默认的HashMap使用开链法处理冲突。
 
-没什么好说的，就是个普普通通的哈希表。取模策略是模仿Java，移位+异或+按位与，反正就是不取模。
+3.1 [HashMap](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/HashMap.h)
+
+开链法处理冲突的哈希表。取模策略是模仿Java，移位+异或+按位与，反正就是不取模。
+
+3.2 [HashMap-OpenAddress](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/HashMap-OpenAddress.h)
+
+开放寻址法处理冲突的哈希表。探查方式有三种:Linear，Quadratic，Double，可以在模板参数里面选择。貌似跑的比开链法快一些?
 
 4.优先队列
 
-4.1
-
-[PriorityQueue](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/PriorityQueue.h)
+4.1 [PriorityQueue](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/PriorityQueue.h)
 
 对应stl的priority_queue。非常遗憾，比它略慢一点。"抱歉，O2优化的stl真的是可以为所欲为的"。
 
-4.2
-
-[LeftistTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/LeftistTree.h)
+4.2 [LeftistTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/LeftistTree.h)
 
 左偏树，支持O(lgn)合并操作的优先队列。**没有做拷贝控制!!!**
 
-4.3
-
-[FibHeap](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/FibHeap.h)
+4.3 [FibHeap](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/FibHeap.h)
 
 斐波那契堆，支持均摊O(1)合并，O(1)节点减值的优先队列(就是常数大了点)。**没有做拷贝控制!!!**
 
-5.区间查询
+5.各种查询
 
-5.1
-
-[SegmentTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/SegmentTree.h)
+5.1 [SegmentTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/SegmentTree.h)
 
 模板化线段树。非常可惜不能用来做题目，因为需要生成的类型和函数太多，OJ的编译器很可能CTLE。
 
-5.2
+5.2 
 
 [BIT](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/BIT.h)
 
 普通的树状数组。
 
+[BITTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/BITTree.h)
 
+树状数组模拟的平衡树，前驱后继kth是(lgn)^2，其他是lgn。虽然复杂度大但是常数小。
+
+5.3 [Trie](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/Trie.h)
+
+emmm用来存字符串貌似跑的比红黑树还慢一点.....的确是我写的太差了。
+
+5.4 [KDTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/KDTree.h)
+
+本来是klgn的k近邻查询，但是因为必须维护一个标记数组，所以还是O(n)，或者说O(klgn+n)。貌似可以直接把时间戳打在节点上，这样就不用每次memset了，不过懒得写了。
 
 注1：
 
