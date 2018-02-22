@@ -5,28 +5,26 @@ namespace ds
 {
 	//WARNING!!! 这个内存池能且仅能用于处理单个对象!!!vector什么的别想了
 	//在VS里debug下跑的时候所有迭代器操作都会崩溃，我实在不知道为什么
-	template <typename K, int BlockSize, bool EnablePtr32 = false>
+	template <typename K, int BlockSize>
 	class MemPool
 	{
-		union Slot;
-		typedef typename std::conditional<EnablePtr32 && sizeof(K) < sizeof(void*), Slot *, Slot *>::type SlotPointer;
-		template <typename U>
-		static SlotPointer getSlotPtr(U *p)
-		{
-			if (std::is_same<SlotPointer, Slot*>::value)
-				return reinterpret_cast<Slot *>(p);
-			return Ptr32<Slot>(reinterpret_cast<Slot*>(p));
-		}
 		union Slot
 		{
 			K data;
-			SlotPointer	next;
+			Slot *	next;
 		};
-		SlotPointer currBlock, currSlot, lastSlot, freeSlot;
+		template <typename U>
+		static Slot *getSlotPtr(U *p)
+		{
+			if (std::is_same<Slot *, Slot*>::value)
+				return reinterpret_cast<Slot *>(p);
+			return Ptr32<Slot>(reinterpret_cast<Slot*>(p));
+		}
+		Slot * currBlock, currSlot, lastSlot, freeSlot;
 		//currSlot和lastSlot都是currBlock内的指针，所以用下标代替亦可
 		//freeSlot储存的是被deallocate释放的内存链表
-		template <typename K_, int BlockSize_, bool EnablePtr32_>
-		static void init(MemPool<K_, BlockSize_, EnablePtr32_> &m)
+		template <typename K_, int BlockSize_>
+		static void init(MemPool<K_, BlockSize_> &m)
 		{
 			m.currBlock = m.currSlot = m.lastSlot = m.freeSlot = nullptr;
 		}
@@ -39,7 +37,7 @@ namespace ds
 		typedef size_t size_type;
 		typedef ptrdiff_t difference_type;
 		template <typename U>
-		struct rebind { typedef MemPool<U, BlockSize, EnablePtr32> other; };
+		struct rebind { typedef MemPool<U, BlockSize> other; };
 
 		pointer allocate(size_type = 1, const_pointer = nullptr)
 		{
@@ -48,13 +46,13 @@ namespace ds
 				//这里表面上看起来同时使用了union的两个成员(既把freeSlot按照pointer解读，又读取了它的next)
 				//但是实际上"按照pointer解读"并没有使用data，只是给了别人使用data的权力而已，data还需要别人来构造
 				//这也就是allocate相当于malloc的原因，直接申请的内存是不可用的
-				SlotPointer ret = freeSlot;
+				Slot *ret = freeSlot;
 				freeSlot = freeSlot->next;
 				return reinterpret_cast<pointer>(ret);
 			}
 			if (currSlot == lastSlot)
 			{
-				SlotPointer tmp = currBlock; //之所以不直接写currBlock->next = currBlock是为了避免currBlock为nullptr的情况
+				Slot * tmp = currBlock; //之所以不直接写currBlock->next = currBlock是为了避免currBlock为nullptr的情况
 				currBlock = getSlotPtr(malloc(BlockSize * sizeof(Slot)));
 				currBlock->next = tmp; //虽曰next，其实指向的是之前申请的内存
 				currSlot = currBlock + 1, lastSlot = currBlock + BlockSize;
@@ -72,7 +70,7 @@ namespace ds
 		{
 			if (p)
 			{
-				SlotPointer tmp = getSlotPtr(p);
+				Slot * tmp = getSlotPtr(p);
 				tmp->next = freeSlot; //虽曰next，其实指向的是之前返回的内存
 				freeSlot = tmp; 
 			}
@@ -95,36 +93,19 @@ namespace ds
 		}
 		MemPool() noexcept { init(*this); }
 		//表面上看起来有各种构造，其实并不做任何事
-		template <typename K_, int BlockSize_, bool EnablePtr32_>
-		MemPool(const MemPool<K_, BlockSize_, EnablePtr32_>&) noexcept { init(*this); }
-		template <typename K_, int BlockSize_, bool EnablePtr32_>
-		MemPool& operator=(const MemPool<K_, BlockSize_, EnablePtr32_>&) noexcept { init(*this); return *this; }
-
+		template <typename K_, int BlockSize_>
+		MemPool(const MemPool<K_, BlockSize_>&) noexcept { init(*this); }
+		template <typename K_, int BlockSize_>
+		MemPool& operator=(const MemPool<K_, BlockSize_>&) noexcept { init(*this); return *this; }
+		//移动构造被我删掉了，因为它不能正常工作，与其RE不如CE
 		~MemPool() noexcept
 		{
 			while (currBlock)
 			{
-				SlotPointer tmp = currBlock->next;
+				Slot *tmp = currBlock->next;
 				free(currBlock);
 				currBlock = tmp;
 			}
-		}
-		MemPool(MemPool &&rhs) noexcept
-		{
-			currBlock = rhs.currBlock;
-			currSlot = rhs.currSlot;
-			lastSlot = rhs.lastSlot;
-			freeSlot = rhs.freeSlot;
-			init(rhs);
-		}
-		MemPool& operator=(MemPool &&rhs) noexcept
-		{
-			if (this != &rhs)
-			{
-				~MemPool();
-				new(this) MemPool(std::move(rhs));
-			}
-			return *this;
 		}
 	};
 }

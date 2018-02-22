@@ -9,11 +9,11 @@ namespace ds
 		ClockType beg;
 	public:
 		Profiler() :beg(Timer::now()) {}
-		auto reset() ->decltype(Timer::now()- Timer::now())
+		decltype((beg - beg).count()) reset()
 		{
 			auto ret = Timer::now() - beg;
 			beg = Timer::now();
-			return ret;
+			return ret.count();
 		}
 	};
 }

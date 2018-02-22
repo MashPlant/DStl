@@ -146,8 +146,11 @@
     <ClInclude Include="Complexity.h" />
     <ClInclude Include="Deque.h" />
     <ClInclude Include="FibHeap.h" />
+    <ClInclude Include="HashMap-OpenAddress.h" />
     <ClInclude Include="HashMap.h" />
+    <ClInclude Include="HashMapUtil.h" />
     <ClInclude Include="IntrusiveList.h" />
+    <ClInclude Include="KDTree.h" />
     <ClInclude Include="LeftistTree.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Map-List.h" />
@@ -159,7 +162,6 @@
     <ClInclude Include="Profiler.h" />
     <ClInclude Include="Ptr32.h" />
     <ClInclude Include="RBTree.h" />
-    <ClInclude Include="RBTreeArray.h" />
     <ClInclude Include="SegmentTree.h" />
     <ClInclude Include="SegmentTreeUtil.h" />
     <ClInclude Include="SharedPtr.h" />

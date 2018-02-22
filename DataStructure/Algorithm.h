@@ -448,4 +448,18 @@ namespace ds
 		return k == pat.size() ? pos - k + 1 : -1;
 	}
 
+	template<typename K>
+	void bitwiseSwap(K *lhs,K *rhs) noexcept
+	{
+		//这并不是什么奇技淫巧，也完全没有UB(只要不拿来swap带虚函数表的)
+		//主要是为了避免忘记swap某些成员
+		char *cl = reinterpret_cast<char *>(lhs), *cr = reinterpret_cast<char *>(rhs);
+		int bit = sizeof(K);
+		while (bit--)
+		{
+			char tmp = *cl;
+			*cl++ = *cr;
+			*cr++ = tmp;
+		}
+	}
 }

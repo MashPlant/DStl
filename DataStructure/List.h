@@ -5,7 +5,7 @@ namespace ds
 {
 	//stl的容器都有一个Allocator参数，为了参数数量与之一致这里加一个PlaceHolder
 	//其他容器都还暂时没有加，因为没有需求
-	template<typename K,typename PlaceHolder = bool>
+	template<typename K, typename Alloc = std::allocator<K>>
 	class List
 	{
 	private:
@@ -125,54 +125,29 @@ namespace ds
 		};
 		static void remove(iterator where) { delete where.self_; }
 		int size_ = 0;
-		iterator nil_; // head = nil->next , tail = nil -> prev
-		//断开sour与源的联系并且把sour插入到dest前，没有复制操作
-		//注意没有更新size_(因为insert根本不关心iterator的来源)，调用者要自己更新
+		iterator nil_; //head = nil->next , tail = nil -> prev
 		static void insert(iterator dest, iterator sour)
 		{
+			//断开sour与源的联系并且把sour插入到dest前，没有复制操作
+			//没有更新size
 			Node::extract(sour.self_);
 			Node::insert(dest.self_->prev_, dest.self_, sour.self_);
 		}
 	public:
-		List()
-		{
-			nil_.self_ = new Node;//默认构造函数会把自己和自己连起来
-		}
-		iterator push_back(const_reference key)//为了清晰起见不写成一行，其实是可以的
-		{
-			iterator ntail(key, nil_.prev(), nil_);
-			++size_;
-			return ntail;
-		}
-		void pop_back()
-		{
-			--size_;
-			remove(nil_.prev());//Node析构函数被调用，自动拼接
-		}
-
-		iterator push_front(const_reference key)
-		{
-			iterator nhead(key, nil_, nil_.next());
-			++size_;
-			return nhead;
-		}
-		void pop_front()
-		{
-			--size_;
-			remove(nil_.next());
-		}
+		List() { nil_.self_ = new Node; }
+		void push_back(const_reference key) { ++size_, iterator(key, nil_.prev(), nil_); }
+		void pop_back() { --size_, remove(nil_.prev()); }//Node析构函数被调用，自动拼接
+		void push_front(const_reference key) { ++size_, iterator(key, nil_, nil_.next()); }
+		void pop_front() { --size_, remove(nil_.next()); }
 		iterator erase(iterator where)
 		{
 			//与标准库统一，返回被移除节点之后的一个节点
 			//如果希望在循环中遍历所有节点并删除一些节点，需要 where = erase(where); --where;
-			if (where == nil_)
-				exceptionHandle("erase end node");
 			iterator ret = where.next();
 			remove(where);
 			--size_;
 			return ret;
 		}
-
 		iterator erase(iterator first, iterator last)//[)
 		{
 			//不检查，自裁吧
@@ -194,26 +169,24 @@ namespace ds
 			//返回指向被插入的第一个元素的迭代器
 			iterator beforeinsert = where.prev();
 			while (first != last)
-				insert(where, *first++), ++size_;
+				insert(where, *first++);
 			return beforeinsert.next();
 		}
 
-		//标准库splice没有返回值。这个返回值完全是为了斐波那契堆加的(后来又发现用不着，就删掉了
-		void splice(iterator where,List &rhs,iterator sour) //返回值:first->类似插入的返回值，second->类似删除的返回值
+		void splice(iterator where, List &rhs, iterator sour) 
 		{
 			iterator afterdel = sour.next();
 			insert(where, sour);
 			++size_, --rhs.size_;
-			//return { sour, afterdel };
 		}
 
-		void splice(iterator where,List &rhs) //清空rhs
+		void splice(iterator where, List &rhs) //清空rhs
 		{
 			if (this == &rhs || rhs.empty())
 				return;
 			//我也想写的优雅一点的，不过就这样也没毛病
 			iterator beforeinsert = where.prev();
-			Node *prev = where.prev().self_, *pos=where.self_,*sourfirst = rhs.begin().self_, *sourlast = rhs.end().prev().self_;
+			Node *prev = where.prev().self_, *pos = where.self_, *sourfirst = rhs.begin().self_, *sourlast = rhs.end().prev().self_;
 			//连
 			sourfirst->prev_ = prev, prev->next_ = sourfirst;
 			sourlast->next_ = pos, pos->prev_ = sourlast;
@@ -222,7 +195,6 @@ namespace ds
 			sourlast->next_ = sourlast->prev_ = sourlast;
 			size_ += rhs.size_;
 			rhs.size_ = 0;
-			//return { beforeinsert.next(),rhs.end() };
 		}
 
 		void merge(List &rhs) //归并，清空rhs的内容
@@ -256,14 +228,14 @@ namespace ds
 					int i = 0;
 					//carry带着从*this移走的那个节点一路归并上去
 					//碰到有元素的桶就和该桶合并，合并后swap到carry中
-					while (i < fill && !counter[i].empty()) 
+					while (i < fill && !counter[i].empty())
 					{
 						counter[i].merge(carry);
 						carry.swap(counter[i++]);
 					}
 					//一致进行直到碰到空桶就把当前停止并把carry链表swap到该桶里保存
 					carry.swap(counter[i]);
-					if (i == fill) 
+					if (i == fill)
 						++fill;
 				}
 				for (int i = 1; i < fill; ++i)

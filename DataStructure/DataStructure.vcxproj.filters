@@ -13,35 +13,17 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="头文件\Vector">
-      <UniqueIdentifier>{1e0fef4c-6fa0-4483-836e-dfd5d9073775}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\Trie">
       <UniqueIdentifier>{e1a8e2bd-9273-4747-af3d-6e8885afe96f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Deque">
-      <UniqueIdentifier>{1348384a-78a2-4b7b-9378-513d9a115116}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\Algorithm">
       <UniqueIdentifier>{0209b2f8-5781-4830-abff-08dc7d565c1f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\List">
-      <UniqueIdentifier>{89aae9dd-d629-41c2-ac47-e394ce7d4ccf}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\Test">
       <UniqueIdentifier>{5652be9d-9ac1-4065-b092-777ccd0d9566}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\Heap">
       <UniqueIdentifier>{5eb50dc3-6da2-439f-b4ff-78452652dacd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\AssociativeContainer">
-      <UniqueIdentifier>{b17fa315-0fb8-46aa-901c-8ad8fb624ea6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\AssociativeContainer\对拍">
-      <UniqueIdentifier>{acf24087-7a5d-48cf-868f-4eb50594a5e9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="头文件\AssociativeContainer\Tree">
-      <UniqueIdentifier>{fbfe55cc-e783-4e1d-9104-486d588ffd08}</UniqueIdentifier>
     </Filter>
     <Filter Include="头文件\Query">
       <UniqueIdentifier>{2123fbab-8470-4d1f-b93e-b3b389fcb259}</UniqueIdentifier>
@@ -51,6 +33,21 @@
     </Filter>
     <Filter Include="头文件\Profiler">
       <UniqueIdentifier>{dc57ee6e-635b-4c94-b2c4-14d74246bc48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Map">
+      <UniqueIdentifier>{b17fa315-0fb8-46aa-901c-8ad8fb624ea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Map\对拍">
+      <UniqueIdentifier>{acf24087-7a5d-48cf-868f-4eb50594a5e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Map\Tree">
+      <UniqueIdentifier>{fbfe55cc-e783-4e1d-9104-486d588ffd08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\LinearContainer">
+      <UniqueIdentifier>{8274af37-1b77-4326-912f-1555c068196b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\HashMap">
+      <UniqueIdentifier>{5c5df7f2-8ab7-475c-8524-a629daad143d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -63,14 +60,8 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
-      <Filter>头文件\Vector</Filter>
-    </ClInclude>
     <ClInclude Include="Trie.h">
       <Filter>头文件\Trie</Filter>
-    </ClInclude>
-    <ClInclude Include="Deque.h">
-      <Filter>头文件\Deque</Filter>
     </ClInclude>
     <ClInclude Include="Util.h">
       <Filter>头文件</Filter>
@@ -78,11 +69,8 @@
     <ClInclude Include="Algorithm.h">
       <Filter>头文件\Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="List.h">
-      <Filter>头文件\List</Filter>
-    </ClInclude>
     <ClInclude Include="Map.h">
-      <Filter>头文件\AssociativeContainer</Filter>
+      <Filter>头文件\Map</Filter>
     </ClInclude>
     <ClInclude Include="FibHeap.h">
       <Filter>头文件\Heap</Filter>
@@ -94,49 +82,34 @@
       <Filter>头文件\Heap</Filter>
     </ClInclude>
     <ClInclude Include="BTree.h">
-      <Filter>头文件\AssociativeContainer</Filter>
+      <Filter>头文件\Map</Filter>
     </ClInclude>
     <ClInclude Include="TimSort.h">
       <Filter>头文件\Algorithm</Filter>
     </ClInclude>
-    <ClInclude Include="HashMap.h">
-      <Filter>头文件\AssociativeContainer</Filter>
-    </ClInclude>
     <ClInclude Include="NaiveDB.h">
-      <Filter>头文件\AssociativeContainer</Filter>
+      <Filter>头文件\Map</Filter>
     </ClInclude>
     <ClInclude Include="AVL.h">
-      <Filter>头文件\AssociativeContainer\Tree</Filter>
+      <Filter>头文件\Map\Tree</Filter>
     </ClInclude>
     <ClInclude Include="RBTree.h">
-      <Filter>头文件\AssociativeContainer\Tree</Filter>
+      <Filter>头文件\Map\Tree</Filter>
     </ClInclude>
     <ClInclude Include="Splay.h">
-      <Filter>头文件\AssociativeContainer\Tree</Filter>
+      <Filter>头文件\Map\Tree</Filter>
     </ClInclude>
     <ClInclude Include="TreeUtil.h">
-      <Filter>头文件\AssociativeContainer\Tree</Filter>
+      <Filter>头文件\Map\Tree</Filter>
     </ClInclude>
     <ClInclude Include="Map-List.h">
-      <Filter>头文件\AssociativeContainer</Filter>
+      <Filter>头文件\Map</Filter>
     </ClInclude>
     <ClInclude Include="SkipList.h">
-      <Filter>头文件\AssociativeContainer</Filter>
-    </ClInclude>
-    <ClInclude Include="IntrusiveList.h">
-      <Filter>头文件\List</Filter>
-    </ClInclude>
-    <ClInclude Include="RBTreeArray.h">
-      <Filter>头文件\AssociativeContainer\Tree</Filter>
-    </ClInclude>
-    <ClInclude Include="String.h">
-      <Filter>头文件\Vector</Filter>
-    </ClInclude>
-    <ClInclude Include="Stack.h">
-      <Filter>头文件\Vector</Filter>
+      <Filter>头文件\Map</Filter>
     </ClInclude>
     <ClInclude Include="Treap.h">
-      <Filter>头文件\AssociativeContainer\Tree</Filter>
+      <Filter>头文件\Map\Tree</Filter>
     </ClInclude>
     <ClInclude Include="SegmentTree.h">
       <Filter>头文件\Query</Filter>
@@ -157,10 +130,10 @@
       <Filter>头文件\Query</Filter>
     </ClInclude>
     <ClInclude Include="vEBTree-pointer.h">
-      <Filter>头文件\AssociativeContainer\Tree</Filter>
+      <Filter>头文件\Map\Tree</Filter>
     </ClInclude>
     <ClInclude Include="vEBTree.h">
-      <Filter>头文件\AssociativeContainer\Tree</Filter>
+      <Filter>头文件\Map\Tree</Filter>
     </ClInclude>
     <ClInclude Include="BITTree.h">
       <Filter>头文件\Query</Filter>
@@ -173,6 +146,36 @@
     </ClInclude>
     <ClInclude Include="Profiler.h">
       <Filter>头文件\Profiler</Filter>
+    </ClInclude>
+    <ClInclude Include="KDTree.h">
+      <Filter>头文件\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="IntrusiveList.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="Stack.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="String.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="Deque.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="HashMap.h">
+      <Filter>头文件\HashMap</Filter>
+    </ClInclude>
+    <ClInclude Include="HashMap-OpenAddress.h">
+      <Filter>头文件\HashMap</Filter>
+    </ClInclude>
+    <ClInclude Include="HashMapUtil.h">
+      <Filter>头文件\HashMap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -191,9 +194,6 @@
     <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp">
       <Filter>头文件\Heap</Filter>
     </ClCompile>
-    <ClCompile Include="顺序容器三连.cpp">
-      <Filter>头文件\Test</Filter>
-    </ClCompile>
     <ClCompile Include="堆三连.cpp">
       <Filter>头文件\Test</Filter>
     </ClCompile>
@@ -201,13 +201,16 @@
       <Filter>头文件\Test</Filter>
     </ClCompile>
     <ClCompile Include="对拍.cpp">
-      <Filter>头文件\AssociativeContainer\对拍</Filter>
+      <Filter>头文件\Map\对拍</Filter>
     </ClCompile>
     <ClCompile Include="Mapn连.cpp">
       <Filter>头文件\Test</Filter>
     </ClCompile>
     <ClCompile Include="TestMemPool.cpp">
       <Filter>头文件\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="顺序容器三连.cpp">
+      <Filter>头文件\LinearContainer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
