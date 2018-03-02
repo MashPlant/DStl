@@ -2,6 +2,8 @@
 #include <iterator>
 namespace ds
 {
+	//注意，非常依赖于编译器和具体的机器
+	//这里假定64位的指针只有后32位非0，很多情况下(如微软的编译器下)这都是不成立的
 	template <typename K>
 	class Ptr32
 	{
@@ -40,11 +42,12 @@ namespace ds
 			operator-=(1);
 			return tmp;
 		}
-		operator K *() const { return static_cast<K *>(0) + ptr; }
-		K &operator*() { return *(K *)*this; }
-		K *operator->() { return (K *)*this; }
-		const K &operator*() const { return *(K *)*this; }
-		const K *operator->() const { return (K *)*this; }
+		operator K *() const { return static_cast<K *>(nullptr) + ptr; }
+		K &operator*() const { return **this; }
+		K *operator->() const { return *this; }
+		K &operator[](int index) const { return *(*this + index); }
+		//注意，const版本的重载实际上是const pointer,不是pointer to const，所以直接返回K的指针或者引用
+		//所以实际上不需要提供非const版本的重载
 	private:
 		uint32_t ptr = 0;
 	};

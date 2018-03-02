@@ -2,8 +2,6 @@
 #include <functional>
 #include <ratio>
 #include <string>
-#include <iostream>
-#include <thread>
 namespace ds
 {
 	template<typename Iter>
@@ -207,7 +205,15 @@ namespace ds
 		{
 			Iter tmp = cur++;
 			auto value = std::move(*tmp);
-			while (tmp != first&&comp(value, *(tmp - 1)))
+			if (comp(value,*first)) //首先与第一个比较，如果比第一个还小，那么直接移动
+			{
+				while (tmp != first) //这里就不用判断大小了
+					*tmp = std::move(*(tmp - 1)), --tmp;
+				*tmp = std::move(value);
+				continue;
+			}
+			//这里就不用判断越界了
+			while (comp(value, *(tmp - 1)))
 				*tmp = std::move(*(tmp - 1)), --tmp;
 			*tmp = std::move(value);
 		}
@@ -235,7 +241,7 @@ namespace ds
 			aux = new value_type[last - first];
 		Iter tmpmid = mid, tmpfirst = first;
 		int pos = 0;
-		while (first != tmpmid&&mid != last)
+		while (first != tmpmid && mid != last)
 		{
 			if (comp(*mid, *first)) //稳定
 				aux[pos++] = std::move(*(mid++));
@@ -298,10 +304,8 @@ namespace ds
 		typedef typename std::iterator_traits<Iter>::value_type value_type;
 		const Iter mid = first + (last - first) / 2;
 		value_type *aux = new value_type[last - first];
-		auto th1 = std::thread(ds::merge_sort_impl_<Iter, Comp>, first, mid, comp, aux);
-		auto th2 = std::thread(ds::merge_sort_impl_<Iter, Comp>, mid, last, comp, aux + ((last - first) / 2));
-		th1.join();
-		th2.join();
+		ds::merge_sort_impl_<Iter, Comp>(first, mid, comp, aux);
+		ds::merge_sort_impl_<Iter, Comp>(first, mid, last, comp, aux);
 		ds::merge(first, mid, last, comp, aux);
 		delete[]aux;
 	}

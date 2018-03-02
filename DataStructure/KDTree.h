@@ -12,7 +12,8 @@ namespace ds
 		const std::array<std::function<double(const K&)>, Dimen> dimen;
 		std::vector<K> pts;
 		std::vector<int> split; //必须把每一次分割的维度保存下来才能查询
-		std::vector<char> used; //这里并不在乎空间占用，用vector<char>强制避开vector<bool>的空间优化
+		std::vector<int> tags;
+
 		void build(int l, int r) //[0,n) indexed
 		{
 			if (l >= r)  return;
@@ -47,6 +48,7 @@ namespace ds
 		};
 		double ans;
 		int index;
+		int timeTag = 0;
 		//ans和index只由query使用；放在函数参数里面传太累了
 		void query(const K &pt,int l, int r)
 		{
@@ -56,8 +58,8 @@ namespace ds
 			double dis = 0.0;
 			for (int d = 0; d < Dimen; d++)
 				dis += pow(dimen[d](pts[mid]) - dimen[d](pt), 2);
-			if (!used[mid] && dis < ans) //更新最近距离 
-				used[mid] = 1, ans = dis, index = mid;
+			if (tags[mid] != timeTag && dis < ans) //更新最近距离 
+				 ans = dis, index = mid;
 			//计算pt到[分裂平面]的距离
 			//注意到分裂平面是垂直与被分割的维度的坐标轴的，所以点到平面的距离只需要一个坐标差
 			double currOfPt = dimen[split[mid]](pt), currOfMid = dimen[split[mid]](pts[mid]);
@@ -79,19 +81,19 @@ namespace ds
 		}
 	public:
 		KDTree(decltype(dimen) dimen, const std::vector<K> &pts) 
-		:dimen(dimen), pts(pts),split(pts.size()),used(split.size())
+		:dimen(dimen), pts(pts),split(pts.size()),tags(split.size())
 		{
 			build(0, pts.size());
 		}
 		std::vector<Result> knn(const K &pt,int k) 
 		{
 			std::vector<Result> ret;
-			memset(&used[0], 0, used.size());
+			++timeTag;
 			while (k--)
 			{
 				ans = DBL_MAX, index = -1;
 				query(pt, 0, pts.size());
-				used[index] = 1;
+				tags[index] = timeTag;
 				ret.push_back({ pts[index] ,ans });
 			}
 			return ret;

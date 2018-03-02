@@ -35,7 +35,7 @@ namespace ds
 		void replaceFirst(const K &key)
 		{
 			container[0] = key;
-			ds::push_heap(container.begin(), container.end(), comp);
+			ds::fixHeap_(container.begin(), comp, 0, container.size());
 		}
 		bool empty()const { return container.empty(); }
 		int size()const { return container.size(); }

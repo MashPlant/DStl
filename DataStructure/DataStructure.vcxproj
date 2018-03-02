@@ -146,6 +146,7 @@
     <ClInclude Include="Complexity.h" />
     <ClInclude Include="Deque.h" />
     <ClInclude Include="FibHeap.h" />
+    <ClInclude Include="ForwardList.h" />
     <ClInclude Include="HashMap-OpenAddress.h" />
     <ClInclude Include="HashMap.h" />
     <ClInclude Include="HashMapUtil.h" />
@@ -158,6 +159,8 @@
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="MemPool.h" />
     <ClInclude Include="NaiveDB.h" />
+    <ClInclude Include="PersistentArray.h" />
+    <ClInclude Include="Polynomial.h" />
     <ClInclude Include="PriorityQueue.h" />
     <ClInclude Include="Profiler.h" />
     <ClInclude Include="Ptr32.h" />
@@ -197,6 +200,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="VisualDS.natvis">
+      <SubType>Designer</SubType>
+    </Natvis>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

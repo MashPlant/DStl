@@ -49,6 +49,9 @@
     <Filter Include="头文件\HashMap">
       <UniqueIdentifier>{5c5df7f2-8ab7-475c-8524-a629daad143d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\Other">
+      <UniqueIdentifier>{b09c1974-dc4b-4506-892b-90f35813381f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -177,6 +180,15 @@
     <ClInclude Include="HashMapUtil.h">
       <Filter>头文件\HashMap</Filter>
     </ClInclude>
+    <ClInclude Include="ForwardList.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="Polynomial.h">
+      <Filter>头文件\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="PersistentArray.h">
+      <Filter>头文件\Query</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -212,5 +224,10 @@
     <ClCompile Include="顺序容器三连.cpp">
       <Filter>头文件\LinearContainer</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="VisualDS.natvis">
+      <Filter>资源文件</Filter>
+    </Natvis>
   </ItemGroup>
 </Project>

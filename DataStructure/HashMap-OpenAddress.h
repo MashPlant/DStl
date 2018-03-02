@@ -1,8 +1,8 @@
 #pragma once
 #include "HashMapUtil.h"
 #include <utility>
-#include <stdexcept>
 #include <cstdlib>
+#include "Algorithm.h"
 
 namespace ds
 {
@@ -11,7 +11,8 @@ namespace ds
 	class HashMap<K, V, OpenAddressT, true>
 	{
 		typedef typename OpenAddressT::CodeType CodeType;
-		typedef std::pair< K, V> ValueType;
+		typedef std::pair<const K, V> ValueType;
+		typedef std::pair<K, V> InputType;
 		struct Node
 		{
 			enum State { empty, used, deleted };
@@ -24,8 +25,8 @@ namespace ds
 			//Node(ValueType &&value) noexcept :value(std::move(value)), state(used) {}
 			//每次调用Node的移动构造的时候，虽然写了value(std::move(value))，但是我选的K(比如string)并没有移动
 			//这是因为ValueType是pair<const K,V>,所以得到了一个const K &&，它无法匹配K &&，而是会匹配const K &,所以发生了复制
-			//那么我来一波const_cast即可
-			Node(ValueType &&value) noexcept : value(std::move(const_cast<K &>(value.first)),std::move(value.second)), state(used) {}
+			//const_cast似乎是UB，不用了；rehash的时候，我memcpy谁还能拦得住吗?
+			Node(InputType &&value) noexcept : value(std::move(value.first),std::move(value.second)), state(used) {}
 		};
 		Node *nextNode(Node *x) const
 		{
@@ -88,7 +89,13 @@ namespace ds
 				memset(table, 0, capacity * sizeof(Node));
 				for (int i = 0; i < ocap; ++i)
 					if (otbl[i].state == Node::used)
-						insertUnchecked(std::move(otbl[i].value));
+					{
+						OpenAddressT hasher(otbl[i]->first);
+						auto h = hashCode(hasher.probe(0));
+						for (int j = 0; !table[h].terminal() && j < capacity; h = hashCode(hasher.probe(++j)))
+							; //这里没有必要再检查deleted和相等，都不可能发生
+						memcpy(table + h, otbl + i, sizeof(Node));
+					}
 				free(otbl);
 			}
 		}
@@ -110,17 +117,22 @@ namespace ds
 			return { &table[free].value,true };
 		}
 	public:
-		void insert(const ValueType &value)
+		void insert(const InputType &value)
 		{
 			if (insertUnchecked(value).second)
 				++size_;
 			rehash();
 		}
-		void insert(ValueType &&value)
+		void insert(InputType &&value)
 		{
 			if (insertUnchecked(std::move(value)).second)
 				++size_;
 			rehash();
+		}
+		template <typename ...Args,typename = typename std::enable_if<std::is_constructible<InputType,Args...>::value>::type>
+		void insert(Args &&...args)
+		{
+			insert(InputType(std::forward<Args>(args)...));
 		}
 		V &operator[](const K &key)
 		{

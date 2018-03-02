@@ -50,7 +50,6 @@ namespace ds
 			{
 				K lb = x.label;
 				x.label = K();
-				//todo 调用func.rangeSum -> CE,原因还没弄懂
 				x.left.key += Function::rangeSum(lb, lenOf(x.left)); 
 				x.right.key += Function::rangeSum(lb, lenOf(x.right));
 				addLabel(x.left, lb);
@@ -84,6 +83,13 @@ namespace ds
 		SegmentTree(Iter it):root(it){}
 		K query(int l, int r) { return query(root, l, r); }
 		void rangeAdd(int l, int r, const K &k) { rangeAdd(root, l, r, k); }
+
+		template <typename ModifyT>
+		void modify(int l,int r,const K &k)
+		{
+			
+		}
+		
 	};
 	template <typename K, typename Func, int N>
 	typename SegmentTree<K, Func, N>::Function SegmentTree<K, Func, N>::func;

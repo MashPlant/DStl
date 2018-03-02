@@ -1,5 +1,4 @@
 #pragma once
-#include "Ptr32.h"
 #include  <type_traits>
 namespace ds
 {
@@ -11,23 +10,11 @@ namespace ds
 		union Slot
 		{
 			K data;
-			Slot *	next;
+			Slot *next;
 		};
-		template <typename U>
-		static Slot *getSlotPtr(U *p)
-		{
-			if (std::is_same<Slot *, Slot*>::value)
-				return reinterpret_cast<Slot *>(p);
-			return Ptr32<Slot>(reinterpret_cast<Slot*>(p));
-		}
-		Slot * currBlock, currSlot, lastSlot, freeSlot;
-		//currSlot和lastSlot都是currBlock内的指针，所以用下标代替亦可
-		//freeSlot储存的是被deallocate释放的内存链表
-		template <typename K_, int BlockSize_>
-		static void init(MemPool<K_, BlockSize_> &m)
-		{
-			m.currBlock = m.currSlot = m.lastSlot = m.freeSlot = nullptr;
-		}
+		Slot *curBlock = nullptr, *freeSlot = nullptr;//freeSlot储存的是被deallocate释放的内存链表
+		int pos = 1;
+		
 	public:
 		typedef K value_type;
 		typedef value_type *pointer;
@@ -39,7 +26,7 @@ namespace ds
 		template <typename U>
 		struct rebind { typedef MemPool<U, BlockSize> other; };
 
-		pointer allocate(size_type = 1, const_pointer = nullptr)
+		pointer allocate(size_type = 1)
 		{
 			if (freeSlot != nullptr) 
 			{
@@ -50,15 +37,15 @@ namespace ds
 				freeSlot = freeSlot->next;
 				return reinterpret_cast<pointer>(ret);
 			}
-			if (currSlot == lastSlot)
+			if (pos == BlockSize || curBlock == nullptr)
 			{
-				Slot * tmp = currBlock; //之所以不直接写currBlock->next = currBlock是为了避免currBlock为nullptr的情况
-				currBlock = getSlotPtr(malloc(BlockSize * sizeof(Slot)));
-				currBlock->next = tmp; //虽曰next，其实指向的是之前申请的内存
-				currSlot = currBlock + 1, lastSlot = currBlock + BlockSize;
-				//注意+1非常重要，不能破坏currBlock内存放的next(这就是所谓的overhead)
+				Slot *tmp = curBlock; 
+				curBlock = reinterpret_cast<Slot *>(malloc(BlockSize * sizeof(Slot)));
+				curBlock->next = tmp; //虽曰next，其实指向的是之前申请的内存
+				pos = 1;
 			}
-			return reinterpret_cast<pointer>(currSlot++); //一个block中内存是连续的
+			//从1开始使用内存，不能破坏curBlock内存放的next(这就是所谓的overhead)
+			return reinterpret_cast<pointer>(curBlock + pos++); //一个block中内存是连续的
 		}
 		template <typename ...Args>
 		void construct(pointer p,Args&& ...args)
@@ -70,7 +57,7 @@ namespace ds
 		{
 			if (p)
 			{
-				Slot * tmp = getSlotPtr(p);
+				Slot *tmp = reinterpret_cast<Slot *>(p);
 				tmp->next = freeSlot; //虽曰next，其实指向的是之前返回的内存
 				freeSlot = tmp; 
 			}
@@ -79,33 +66,22 @@ namespace ds
 		{
 			p->~value_type();
 		}
-		template<typename ...Args>
-		value_type *newElem(Args&&... args)
-		{
-			value_type *ret = allocate();
-			construct(ret, std::forward<Args>(args)...);
-			return ret;
-		}
-		void delElem(pointer p)
-		{
-			deallocate(p);
-			destroy(p);
-		}
-		MemPool() noexcept { init(*this); }
+		MemPool() noexcept {  }
 		//表面上看起来有各种构造，其实并不做任何事
 		template <typename K_, int BlockSize_>
-		MemPool(const MemPool<K_, BlockSize_>&) noexcept { init(*this); }
-		template <typename K_, int BlockSize_>
-		MemPool& operator=(const MemPool<K_, BlockSize_>&) noexcept { init(*this); return *this; }
-		//移动构造被我删掉了，因为它不能正常工作，与其RE不如CE
-		~MemPool() noexcept
-		{
-			while (currBlock)
-			{
-				Slot *tmp = currBlock->next;
-				free(currBlock);
-				currBlock = tmp;
-			}
-		}
+		MemPool(const MemPool<K_, BlockSize_>&) noexcept { }
+
+		//出于某种我无法理解的原因，微软的编译器会在stl容器的构造函数中利用allocator来构造一个_Container_proxy
+		//而且那个allocator是在函数内创建的，很快就析构了。如果执行析构函数那个proxy就会被释放掉，从而挂掉
+//		~MemPool() 
+//		{
+//			std::cout << typeid(K).name();
+//			while (curBlock)
+//			{
+//				Slot *tmp = curBlock->next;
+//				free(curBlock);
+//				curBlock = tmp;
+//			}
+//		}
 	};
 }
