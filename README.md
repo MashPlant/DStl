@@ -11,13 +11,19 @@
 
 对应stl中的vector，基本上完全一致，除了使用malloc/realloc/free管理内存之外
 
-1.2 [Deuqe](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/Deque.h)
+1.2 [Deque](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/Deque.h)
 
 对应stl中的deque，原理上完全不一样。stl的deque使用了一片连续的"中央控制器"来管理零散的大内存块，实现整块连续的假象；这里的Deque是最简单的实现：循环队列。二者相比，stl的虽然迭代较慢，但是在push/pop时，最坏情况下也只是O(n/blocksize)，相当优秀，更加适合用来实现stack和queue。我限于能力有限，没有像stl一样实现。
 
-1.3 [List](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/List.h)
+1.3 
+
+[List](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/List.h)
 
 对应stl中的list，基本上完全一致，带一个哨兵节点的双向队列。值得一提的是它的排序算法。不像某些语言(如Java)直接把链表转换成数组来排序(**注1**)(可以说是很流氓了)。这里的List::sort是模仿stl的实现，是一个非递归的归并排序，非常巧妙。
+
+[ForwardList](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/ForwardList.h)
+
+不带哨兵节点，不保存size的单向链表。这是由它的使用目的决定的:省内存。(然而并没有用在HashMap里)
 
 1.4 [SkipList](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/SkipList.h)
 
@@ -102,6 +108,12 @@ emmm用来存字符串貌似跑的比红黑树还慢一点.....的确是我写�
 5.4 [KDTree](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/KDTree.h)
 
 本来是klgn的k近邻查询，但是因为必须维护一个标记数组，所以还是O(n)，或者说O(klgn+n)。貌似可以直接把时间戳打在节点上，这样就不用每次memset了，不过懒得写了。
+
+5.5 [PersistentArray](https://github.com/MashPlant/DataStructure/blob/master/DataStructure/PersistentArray.h)
+
+可持久化数组。没有做operator[]，因为实在意义不大，只能用来读数据，没办法用来创建新版本，所以就用query和update吧。
+
+
 
 注1：
 
