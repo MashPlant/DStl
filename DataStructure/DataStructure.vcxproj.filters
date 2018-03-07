@@ -189,6 +189,15 @@
     <ClInclude Include="PersistentArray.h">
       <Filter>头文件\Query</Filter>
     </ClInclude>
+    <ClInclude Include="PairingHeap.h">
+      <Filter>头文件\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="PersistentTreap.h">
+      <Filter>头文件\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="Calculator.h">
+      <Filter>头文件\Other</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -198,9 +207,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="LuoguP3377LeftistTree.cpp">
-      <Filter>头文件\Heap</Filter>
-    </ClCompile>
-    <ClCompile Include="LuoguP3371Dijkstra.cpp">
       <Filter>头文件\Heap</Filter>
     </ClCompile>
     <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp">

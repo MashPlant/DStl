@@ -143,8 +143,10 @@
     <ClInclude Include="BIT.h" />
     <ClInclude Include="BITTree.h" />
     <ClInclude Include="BTree.h" />
+    <ClInclude Include="Calculator.h" />
     <ClInclude Include="Complexity.h" />
     <ClInclude Include="Deque.h" />
+    <ClInclude Include="PersistentTreap.h" />
     <ClInclude Include="FibHeap.h" />
     <ClInclude Include="ForwardList.h" />
     <ClInclude Include="HashMap-OpenAddress.h" />
@@ -159,6 +161,7 @@
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="MemPool.h" />
     <ClInclude Include="NaiveDB.h" />
+    <ClInclude Include="PairingHeap.h" />
     <ClInclude Include="PersistentArray.h" />
     <ClInclude Include="Polynomial.h" />
     <ClInclude Include="PriorityQueue.h" />
@@ -188,7 +191,6 @@
     <ClCompile Include="对拍.cpp" />
     <ClCompile Include="DataStructure.cpp" />
     <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp" />
-    <ClCompile Include="LuoguP3371Dijkstra.cpp" />
     <ClCompile Include="LuoguP3377LeftistTree.cpp" />
     <ClCompile Include="Mapn连.cpp" />
     <ClCompile Include="堆三连.cpp" />
