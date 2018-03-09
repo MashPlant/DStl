@@ -146,6 +146,7 @@
     <ClInclude Include="Calculator.h" />
     <ClInclude Include="Complexity.h" />
     <ClInclude Include="Deque.h" />
+    <ClInclude Include="ListT.h" />
     <ClInclude Include="PersistentTreap.h" />
     <ClInclude Include="FibHeap.h" />
     <ClInclude Include="ForwardList.h" />

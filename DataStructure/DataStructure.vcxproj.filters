@@ -52,6 +52,9 @@
     <Filter Include="头文件\Other">
       <UniqueIdentifier>{b09c1974-dc4b-4506-892b-90f35813381f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\TMP">
+      <UniqueIdentifier>{caf89899-e2fe-46a1-a8a8-c6cbbdca9cdc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -197,6 +200,9 @@
     </ClInclude>
     <ClInclude Include="Calculator.h">
       <Filter>头文件\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="ListT.h">
+      <Filter>头文件\TMP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
