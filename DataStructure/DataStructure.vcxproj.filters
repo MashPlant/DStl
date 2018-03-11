@@ -204,6 +204,12 @@
     <ClInclude Include="ListT.h">
       <Filter>头文件\TMP</Filter>
     </ClInclude>
+    <ClInclude Include="Function.h">
+      <Filter>头文件\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="SetT.h">
+      <Filter>头文件\TMP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

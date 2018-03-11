@@ -22,7 +22,7 @@ namespace ds
 	struct ListT<T, First, Items...>
 	{
 		typedef ListT<T, Items...> Next;
-		const static int value = First;
+		const static T value = First;
 		typedef T ValueType;
 	};
 
@@ -30,7 +30,7 @@ namespace ds
 	struct ListT<T, First>
 	{
 		typedef NullT<T> Next;
-		const static int value = First;
+		const static T value = First;
 		typedef T ValueType;
 	};
 
@@ -41,16 +41,26 @@ namespace ds
 	struct Get<List, 0> : List
 	{	};
 
-	template <typename List, int Cur = 0,bool Null = IsNull<List>::value>
+	template <typename List, typename List::ValueType Elem, int Where = 0,
+		bool Found = List::value == Elem>
+		struct Find : Find<typename List::Next, Elem, Where + 1>
+	{	};
+	template <typename List, typename List::ValueType Elem, int Where>
+	struct Find<List, Elem, Where, true>
+	{
+		const static int value = Where;
+	};
+
+	template <typename List, int Cur = 0, bool Null = IsNull<List>::value>
 	struct Output
 	{
 		using T = typename List::ValueType;
-		template <int Index, T>	
+		template <int Index, T Value>
 		struct Outputer; //利用编译器的错误信息来输出
 		Outputer<Cur, List::value> impl{}; //貌似不加大括号强制初始化的话，输出的顺序就会乱，不知道为什么
 		Output<typename List::Next, Cur + 1> next;
 	};
-	template <typename List,int Cur>
+	template <typename List, int Cur>
 	struct Output<List, Cur, true>
 	{	};
 
@@ -79,7 +89,7 @@ namespace ds
 		struct Impl
 		{
 			typedef Impl<T, typename Iter::Next, Elem> Next;
-			const static int value = Iter::value;
+			const static T value = Iter::value;
 			typedef T ValueType;
 		};
 		template <typename T, typename Iter, T Elem>
@@ -92,6 +102,37 @@ namespace ds
 	}
 	template <typename List, typename List::ValueType Elem>
 	struct PushBack : pbimpl::Impl<typename List::ValueType, List, Elem>
+	{	};
+
+	namespace setimpl
+	{
+		template <typename Return, typename Iter, int Where, typename Iter::ValueType Elem, bool Null = IsNull<Iter>::value>
+		struct Impl : Impl<
+			typename std::conditional<Where != 0, PushBack<Return, Iter::value>, PushBack<Return, Elem>>::type,
+			typename Iter::Next, Where - 1, Elem>
+		{	};
+		template <typename Return, typename Iter, int Where, typename Iter::ValueType Elem>
+		struct Impl<Return, Iter, Where, Elem, true> : Return
+		{	};
+		//如果where越界，按照上面的逻辑，会自动地不做任何处理
+	}
+	template <typename List, int Where, typename List::ValueType Elem>
+	struct Set : setimpl::Impl<NullT<typename List::ValueType>, List, Where, Elem>
+	{	};
+
+	namespace eraseimpl
+	{
+		template <typename Return, typename Iter, int Where, bool Null = IsNull<Iter>::value>
+		struct Impl : Impl<
+			typename std::conditional<Where != 0, PushBack<Return, Iter::value>, Return>::type,
+			typename Iter::Next, Where - 1>
+		{	};
+		template <typename Return, typename Iter, int Where>
+		struct Impl<Return, Iter, Where, true> : Return
+		{	};
+	}
+	template <typename List, int Where>
+	struct Erase : eraseimpl::Impl<NullT<typename List::ValueType>, List, Where>
 	{	};
 
 	namespace mapimpl
@@ -135,7 +176,7 @@ namespace ds
 	struct Contact : conimpl::Impl<L1, L2>
 	{	};
 
-	namespace qsortimpl
+	namespace sortimpl
 	{
 		template <typename List, bool Null = IsNull<List>::value>
 		struct Impl
@@ -143,20 +184,11 @@ namespace ds
 			using T = typename List::ValueType;
 			const static T pivot = List::value;
 			template <T I>
-			struct Less
-			{
-				const static bool value = I < pivot;
-			};
+			struct Less { const static bool value = I < pivot; };
 			template <T I>
-			struct Equal
-			{
-				const static bool value = I == pivot;
-			};
+			struct Equal { const static bool value = I == pivot; };
 			template <T I>
-			struct Greater
-			{
-				const static bool value = I > pivot;
-			};
+			struct Greater { const static bool value = I > pivot; };
 			using L1 = Filter<List, Less>;
 			using L2 = Filter<List, Equal>;
 			using L3 = Filter<List, Greater>;
@@ -169,6 +201,6 @@ namespace ds
 		};
 	}
 	template <typename List>
-	struct QSort : qsortimpl::Impl<List>::Type
+	struct Sort : sortimpl::Impl<List>::Type
 	{	};
 }

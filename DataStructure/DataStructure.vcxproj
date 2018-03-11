@@ -146,6 +146,7 @@
     <ClInclude Include="Calculator.h" />
     <ClInclude Include="Complexity.h" />
     <ClInclude Include="Deque.h" />
+    <ClInclude Include="Function.h" />
     <ClInclude Include="ListT.h" />
     <ClInclude Include="PersistentTreap.h" />
     <ClInclude Include="FibHeap.h" />
@@ -169,6 +170,7 @@
     <ClInclude Include="Profiler.h" />
     <ClInclude Include="Ptr32.h" />
     <ClInclude Include="RBTree.h" />
+    <ClInclude Include="SetT.h" />
     <ClInclude Include="SegmentTree.h" />
     <ClInclude Include="SegmentTreeUtil.h" />
     <ClInclude Include="SharedPtr.h" />
