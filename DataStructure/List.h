@@ -133,6 +133,17 @@ namespace ds
 			Node::extract(sour.self_);
 			Node::insert(dest.self_->prev_, dest.self_, sour.self_);
 		}
+		void spliceUnchecked(iterator where, List &rhs)
+		{
+			//我也想写的优雅一点的，不过就这样也没毛病
+			Node *prev = where.prev().self_, *pos = where.self_, *sourfirst = rhs.begin().self_, *sourlast = rhs.end().prev().self_;
+			//连
+			sourfirst->prev_ = prev, prev->next_ = sourfirst;
+			sourlast->next_ = pos, pos->prev_ = sourlast;
+			//断，也就是把rhs的nil自己连成环
+			sourlast = rhs.end().self_;
+			sourlast->next_ = sourlast->prev_ = sourlast;
+		}
 	public:
 		List() { nil_.self_ = new Node; }
 		void push_back(const_reference key) { ++size_, iterator(key, nil_.prev(), nil_); }
@@ -184,15 +195,7 @@ namespace ds
 		{
 			if (this == &rhs || rhs.empty())
 				return;
-			//我也想写的优雅一点的，不过就这样也没毛病
-			iterator beforeinsert = where.prev();
-			Node *prev = where.prev().self_, *pos = where.self_, *sourfirst = rhs.begin().self_, *sourlast = rhs.end().prev().self_;
-			//连
-			sourfirst->prev_ = prev, prev->next_ = sourfirst;
-			sourlast->next_ = pos, pos->prev_ = sourlast;
-			//断，也就是把rhs的nil自己连成环
-			sourlast = rhs.end().self_;
-			sourlast->next_ = sourlast->prev_ = sourlast;
+			spliceUnchecked(where, rhs);
 			size_ += rhs.size_;
 			rhs.size_ = 0;
 		}
@@ -208,10 +211,9 @@ namespace ds
 				else //it2大，继续找插入点
 					++it1;
 			}
-			while (it2 != rhs.end()) //还剩一些rhs中的元素必须插在尾部
-				insert(end(), it2++);
-			size_ += rhs.size_;
-			rhs.size_ = 0;
+			if (it2 != rhs.end())
+				spliceUnchecked(end(), rhs); //还剩一些rhs中的元素插在尾部
+			size_ += rhs.size_, rhs.size_ = 0; //splice处理了size，但是再加一遍也不会怎么样
 		}
 
 		void sort()

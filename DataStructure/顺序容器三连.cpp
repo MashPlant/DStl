@@ -13,13 +13,17 @@
 #include <vector>
 #include <deque>
 #include "Algorithm.h"
+#include "CircularQueue.h"
+#include "ForwardList.h"
+#include <forward_list>
+
 using namespace std;
 using namespace ds;
 
 template <typename Container>
 void sort(Container &x)
 {
-	ds::sort(x.begin(), x.end());
+	std::sort(x.begin(), x.end());
 }
 template <typename K>
 void sort(List<K> &lst)
@@ -33,32 +37,38 @@ void sort(list<K> &lst)
 }
 
 template<typename Container>
-void test()
+void test(const char *name)
 {
 	Container x;
+	cout << name << ' ';
 	clock_t beg = clock();
 	for (int i = 0; i < 1e7; ++i)
 		x.push_back(rani(1, 1e9));
-	cout << clock() - beg << endl;
+	cout << clock() - beg << ' ';
 	beg = clock();
 	sort(x);
-	cout << clock() - beg << endl;
+	cout << clock() - beg << ' ';
 	cout << is_sorted(x.begin(), x.end()) << endl;
 }
-/*int main()
-{
-	test<Deque<int>>();
-	cout << endl;
-	test<List<int>>();
-	cout << endl;
-	test<Vector<int>>();
-	cout << endl;
-	test<deque<int>>();
-	cout << endl;
-	test<list<int>>();
-	cout << endl;
-	test<vector<int>>();
-	cout << endl;
-	getchar();
-}*/
+//int main()
+//{
+//	cout << "press to begin\n";
+//	getchar();
+//	test<Vector<int>>("Vector");
+//	test<Deque<int>>("Deque");
+//	test<CircularQueue<int>>("CircularQueue");
+//	test<List<int>>("List");
+//	test<vector<int>>("stl vector");
+//	test<deque<int>>("stl deque");
+//	test<list<int>>("stl list");
+//	cout << "round2\n";
+//	test<vector<int>>("stl vector");
+//	test<deque<int>>("stl deque");
+//	test<list<int>>("stl list");
+//	test<Vector<int>>("Vector");
+//	test<Deque<int>>("Deque");
+//	test<CircularQueue<int>>("CircularQueue");
+//	test<List<int>>("List");
+//	getchar();
+//}
 

@@ -8,9 +8,6 @@
 using std::string;
 namespace ds
 {
-	template<typename K>
-	void TypeChecker(const K &k);
-
 	template <typename First,typename Second>
 	std::ostream& operator<<(std::ostream &os,const std::pair<First,Second> &pr)
 	{
@@ -20,7 +17,7 @@ namespace ds
 	template<typename K>
 	void print(K &&lst)
 	{
-		for (auto &i : lst)
+		for (const auto &i : lst)
 			std::cout << i << ' ';
 		std::cout << std::endl;
 	}
@@ -49,27 +46,10 @@ namespace ds
 	};
 	inline GenIter operator+(int offset, GenIter rhs) { return offset + rhs.pos; }
 
-	inline int read()
-	{
-		static char ch;
-		bool sgn = false;
-		while ((ch = getchar()) < '0' || ch > '9')
-			if (ch == '-')
-				sgn = true;
-		int res = ch - 48;
-		while ((ch = getchar()) >= '0' && ch <= '9')
-			res = res * 10 + ch - 48;
-		return sgn ? -res : res;
-	}
-	inline string reads()
-	{
-		static char buf[100];
-		scanf("%s", buf);
-		return buf;
-	}
+	
 	inline uint32_t rawRani()
 	{
-		static int seed = time(nullptr);
+		static unsigned seed = static_cast<unsigned>(time(nullptr));
 		auto xorshift32 = [&]()->uint32_t 
 		{ 	
 			/* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */ 	
@@ -104,21 +84,4 @@ namespace ds
 		typedef K second_argument_type;
 		const K & operator()(const K &lhs, const K &rhs) const { return min<K>(lhs, rhs); }
 	};
-	/*template <typename V1,typename V2>
-	bool operator==( V1& v1, V2&v2)
-	{
-	if (v1.size() != v2.size())
-	return false;
-	//freopen("out.txt", "w", stdout);
-	for (int i = 0; i < v1.size(); ++i)
-	{
-	//if (i%100==0)
-	//std::cerr << i<<' ';
-	auto tmp1 = v1[i], tmp2 = v2[i];
-	//printf("%d %d\n", tmp1, tmp2);
-	if (tmp1 != tmp2)
-	return false;
-	}
-	return true;
-	}*/
 }

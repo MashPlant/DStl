@@ -1,318 +1,213 @@
 #pragma once
-#include <iostream>
-#include "Util.h"
+#include "Algorithm.h"
+
 namespace ds
 {
-	//取模实现循环队列
-	//&实现取模
-	template <typename K>
+	template <typename T,int BlockSize = 4096>
 	class Deque
 	{
-	public:
-		typedef K value_type;
-		typedef int difference_type;
-		typedef K *pointer;
-		typedef K &reference;
-		typedef const K &const_reference;
-		typedef const K *const_pointer;
-		const static int INITIAL_CAP = 16;
-		class iterator;
-		class const_iterator;
-	private:
-		iterator arr_;
-		pointer beg_; //申请到的内存的真正起点
-		int size_;
-		int capacity_;
+		using Block = T *;
+		const static int InitialCap = 16;
+		Block *blocks = nullptr; //不采用循环队列，而是简单地从中间开始向两边拓展，毕竟扩容的代价是很小的
+		int firstBlock = 0, lastBlock = 0;
+		int blockCap = 0;
+		int head = 0, tail = 0; 
+		//lastBlock指向past end元素所在的块，而非最后一个块之后的块
+		//规定：tail==0当且仅当没有任何元素，这也将是empty函数的依据
+		//只要有元素，tail的值必须在[1,BlockSize]之间
+		template <typename P>
+		static P *alloc(int size) { return reinterpret_cast<P *>(malloc(size * sizeof(P))); }
+		template <typename P>
+		static void dealloc(P *ptr) { free(ptr); }
+		template <typename P>
+		static void destroy(P *ptr,int first,int last)
+		{
+			if (!std::is_trivially_destructible<P>::value)
+				for (P *cur = ptr + first, *end = ptr + last; cur != end; ++cur)
+					cur->~P();
+		}
+		template <typename P>
+		static void destroy(P *ptr) { ptr->~P(); }
+		template <typename P,typename V>
+		static void construct(P *ptr, V &&value) { new(ptr) typename std::decay<V>::type(std::forward<V>(value)); }
 		void expand()
 		{
-			if (size_ == capacity_)
-			{
-				capacity_ <<= 1;
-				const pointer optr = arr_, obeg = beg_; //obeg 是malloc的起点,必须是free的参数
-				beg_ = (pointer)malloc(sizeof(value_type) * capacity_);
-				memmove(beg_, optr, sizeof(value_type) * (obeg + size_ - arr_.self_)); //size_ == capacity_
-				memmove(beg_ + (obeg + size_ - arr_.self_), obeg, sizeof(value_type) * (arr_.self_ - obeg));
-				arr_ = iterator(beg_, this);
-				free(obeg);
-			}
-		}
-		void mov(iterator dest, iterator first, iterator last) //注意重叠的情况
-		{
-			int count = last - first;
-			if (dest <= first)
-				while (count--)
-					memcpy(dest++, first++, sizeof(value_type));
-			else
-			{
-				dest += count, first += count;
-				while (count--)
-					memcpy(--dest, --first, sizeof(value_type));
-			}
-		}
-		void destruct(iterator first, iterator last)
-		{
-			if (std::is_class<value_type>::value)
-				for (; first != last; ++first)
-					first.self_->~K();
-		}
-		void destruct(iterator where)
-		{
-			if (std::is_class<value_type>::value)
-			where.self_->~K();
-		}
-		static int calc(int len)
-		{
-			int cap = INITIAL_CAP;
-			for (; cap < len; cap <<= 1);
-			return cap;
+			Block *nBlocks = alloc<Block>(blockCap <<= 1);
+			//int mid = (firstBlock + lastBlock) / 2; //把指针调整到新申请的内存的中间，这不是必要的操作，只是直觉上性能会好一些
+			memcpy(nBlocks + firstBlock + blockCap / 4 , blocks + firstBlock,
+				sizeof(Block) * (lastBlock - firstBlock + 1));
+			dealloc(blocks);
+			blocks = nBlocks;
+			firstBlock += blockCap / 4 , lastBlock += blockCap / 4;
 		}
 
 	public:
-		void push_back(const_reference key)
+		Deque()
 		{
-			expand();
-			new (arr_ + size_++) value_type(key);
+			blocks = alloc<Block>(blockCap = InitialCap);
+			firstBlock = lastBlock = blockCap / 2;
+			blocks[firstBlock] = alloc<T>(BlockSize);
 		}
-		void push_front(const_reference key)
+		void swap(Deque &other) noexcept { ds::bitwiseSwap(this, &other); }
+		Deque(const Deque &src)
 		{
-			expand();
-			new (--arr_) value_type(key);
-			++size_;
-		}
-		void pop_back()
-		{
-			destruct(arr_ + --size_);
-		}
-		void pop_front()
-		{
-			destruct(arr_++);
-			--size_;
-		}
-		void erase(int pos, int cnt = 1)
-		{
-			cnt = min(size_ - pos, cnt);
-			if (!cnt)
-				return;
-			destruct(arr_ + pos, arr_ + pos + cnt);
-			if (pos * 2 + cnt<size_)//尽量移动较少元素
+			blocks = alloc<Block>(blockCap = src.blockCap);
+			firstBlock = src.firstBlock, lastBlock = src.lastBlock;
+			head = src.head, tail = src.tail;
+			for (int i = firstBlock; i <= lastBlock; ++i)
 			{
-				mov(arr_ + cnt, arr_, arr_ + pos);
-				arr_ += cnt;
+				blocks[i] = alloc<T>(BlockSize);
+				for (int j = (i == firstBlock ? head : 0); j < (i == lastBlock ? tail : BlockSize); ++j)
+					construct(&blocks[i][j], src.blocks[i][j]);
 			}
-			else
-				mov(arr_ + pos, arr_ + pos + cnt, arr_ + size_);
-			size_ -= cnt;
 		}
-		void insert(int pos, const_reference key) //insert and be there
+		Deque(Deque &&src) noexcept
 		{
-			expand();
-			if (pos * 2 < size_)
+			memcpy(this, &src, sizeof(Deque));
+			memset(&src, 0, sizeof(Deque));
+		}
+		Deque &operator=(const Deque &src)
+		{
+			if (this != &src)
 			{
-				--arr_;
-				mov(arr_, arr_ + 1, arr_ + pos + 1);
-				new (arr_ + pos) value_type(key);
-			}
-			else
-			{
-				mov(arr_ + pos + 1, arr_ + pos, arr_ + size_);
-				new (arr_ + pos) value_type(key);
-			}
-			++size_;
-		}
-		reference operator[](int pos) { return arr_[pos]; }
-		const_reference operator[](int pos) const { return arr_[pos]; }
-		bool empty() const { return size_ == 0; }
-		int size() const { return size_; }
-		int capacity() const { return capacity_; }
-		iterator begin() { return arr_; }
-		iterator end() { return arr_ + size_; }
-		const_iterator begin() const { return arr_; }
-		const_iterator end() const { return arr_ + size_; }
-		reference front() { return *arr_; }
-		reference back() { return *(arr_ + size_ - 1); }
-		const_reference front() const { return *arr_; }
-		const_reference back() const { return *(arr_ + size_ - 1); }
-		Deque(int size = 0, int capacity = INITIAL_CAP) : size_(size), capacity_(calc(capacity))
-		{
-			beg_ = (pointer)malloc(capacity_ * sizeof(value_type));
-			arr_ = iterator(beg_, this);
-		}
-		void swap(Deque &rhs) noexcept
-		{
-			std::swap(arr_, rhs.arr_);
-			std::swap(beg_, rhs.beg_);
-			std::swap(size_, rhs.size_);
-			std::swap(capacity_, rhs.capacity_);
-		}
-		Deque &operator=(Deque rhs)
-		{
-			swap(*this, rhs);
-			return *this;
-		}
-		Deque(const Deque &rhs) : arr_(nullptr)
-		{
-			capacity_ = rhs.capacity_, size_ = rhs.size_;
-			beg_ = (pointer)malloc(sizeof(value_type)*capacity_);
-			arr_ = iterator(beg_, this);
-			iterator it = arr_, first = rhs.begin(), last = rhs.end();
-			if (std::is_class<value_type>::value) //直接复制到起点，可以简化一点，也不另外定义函数了
-				for (; first != last; ++it, ++first)
-					new (it) value_type(*first);
-			else
-				memcpy(arr_, first, (last - first) * sizeof(value_type));
-		}
-		Deque &operator=(Deque &&rhs) noexcept
-		{
-			if (this != &rhs)
-			{
-				~Deque();
-				arr_ = rhs.arr_, beg_ = rhs.beg_;
-				rhs.arr_ = rhs.beg_ = nullptr;
-				capacity_ = rhs.capacity_, size_ = rhs.size_;
+				Deque tmp(src);
+				swap(tmp);
 			}
 			return *this;
 		}
-		Deque(Deque &&rhs) noexcept
+		Deque &operator=(Deque &&src) noexcept
 		{
-			arr_ = rhs.arr_, beg_ = rhs.beg_;
-			rhs.arr_ = rhs.beg_ = nullptr;
-			capacity_ = rhs.capacity_, size_ = rhs.size_;
+			if (this != &src)
+			{
+				Deque tmp(std::move(src));
+				swap(tmp);
+			}
+			return *this;
 		}
 		~Deque()
 		{
-			destruct(arr_, arr_ + size_);
-			free(beg_); //必须free malloc得到的内存
+			if (!blocks)
+				return;
+			for (int i = firstBlock; i <= lastBlock; ++i)
+			{
+				destroy(blocks[i], i == firstBlock ? head : 0, i == lastBlock ? tail : BlockSize);
+				dealloc(blocks[i]);
+			}
+			dealloc(blocks);
 		}
-	};
-	template <typename K>
-	class Deque<K>::iterator
-	{
-	private:
-		pointer self_;
-		Deque *container_;
-		operator pointer() const { return self_; }
-		int cur() const { return (self_ - container_->arr_)&(container_->capacity_ - 1); }
-	public:
-		typedef std::random_access_iterator_tag iterator_category;
-		typedef K value_type;
-		typedef int difference_type;
-		typedef K *pointer;
-		typedef K &reference;
-		typedef const K &const_reference;
-		typedef const K *const_pointer;
-		friend Deque;
-		friend const_iterator;
-
-		iterator() : self_(nullptr), container_(nullptr) {}
-		iterator(pointer self, Deque *container) :self_(self), container_(container) {}
-		reference operator*() const { return *self_; }
-		pointer operator->() const { return self_; }
-		iterator &operator+=(int offset)
+		int size() const { return tail - head + BlockSize * (lastBlock - firstBlock); }
+		bool empty() const { return tail == 0; }
+		T &operator[](int pos)
 		{
-			const int oldoffset = self_ - container_->beg_;
-			self_ = container_->beg_ + ((oldoffset + offset)&(container_->capacity_ - 1));
-			return *this;
+			return blocks[firstBlock + (head + pos) / BlockSize][(head + pos) % BlockSize];
 		}
-		iterator &operator-=(int offset)
+		void push_back(const T &value)
 		{
-			operator+=(-offset); //&能够正确处理负数
-			return *this;
+			if (lastBlock == blockCap - 1 && tail == BlockSize)
+				expand();
+			if (tail == BlockSize)
+			{
+				blocks[++lastBlock] = alloc<T>(BlockSize);
+				blocks[lastBlock][0] = value;
+				tail = 1;
+			}
+			else
+				blocks[lastBlock][tail++] = value;
 		}
-		iterator &operator++() { return operator+=(1), *this; }
-		iterator operator++(int)
+		void pop_back() //assert(tail!=0)
 		{
-			iterator tmp = *this;
-			operator+=(1);
-			return tmp;
+			if (tail == 1)
+			{
+				destroy(&blocks[lastBlock][0]);
+				dealloc(blocks[lastBlock--]);
+				tail = BlockSize;
+			}
+			else
+				destroy(&blocks[lastBlock][--tail]);
 		}
-		iterator &operator--() { return operator+=(-1), *this; }
-		iterator operator--(int)
+		void push_front(const T &value)
 		{
-			iterator tmp = *this;
-			operator+=(-1);
-			return tmp;
+			if (firstBlock == 0 && head == 0)
+				expand();
+			if (head == 0)
+			{
+				blocks[--firstBlock] = alloc<T>(BlockSize);
+				blocks[firstBlock][head = BlockSize - 1] = value;
+			}
+			else
+				blocks[firstBlock][--head] = value;
 		}
-		iterator operator+(int offset) const
+		void pop_front()
 		{
-			iterator tmp = *this;
-			tmp += offset;
-			return tmp;
+			if (head == BlockSize - 1)
+			{
+				destroy(&blocks[firstBlock][BlockSize - 1]);
+				dealloc(blocks[firstBlock++]);
+				head = 0;
+			}
+			else
+				destroy(&blocks[firstBlock][head++]);
 		}
-		iterator operator-(int offset) const
+		class iterator
 		{
-			iterator tmp = *this;
-			return tmp += -offset;
-		}
-		int operator-(const const_iterator &rhs) const
-		{
-			return ((self_ - rhs.self_) & (container_->capacity_ - 1)) * (*this < rhs ? -1 : 1);
-		}
-		bool operator!=(const const_iterator &rhs) const { return self_ != rhs.self_; }
-		bool operator==(const const_iterator &rhs) const { return self_ == rhs.self_; }
-		bool operator<(const const_iterator &rhs) const
-		{
-			const pointer arr = container_->arr_;
-			const bool l1 = self_ < arr, l2 = rhs.self_ < arr;
-			if (l1 && !l2) return false;
-			if (!l1 && l2) return true;
-			return self_ < rhs.self_;
-		}
-		bool operator>(const const_iterator &rhs) const { return !*this < rhs && *this == rhs; }
-		bool operator<=(const const_iterator &rhs) const { return *this < rhs || *this == rhs; }
-		bool operator>=(const const_iterator &rhs) const { return !(*this < rhs); }
-		reference operator[](int i) const { return *(*this + i); }
-	};
-	template <typename K>
-	class Deque<K>::const_iterator
-	{
-	private:
-		pointer self_;
-		Deque *container_;
-		operator pointer() const { return self_; } //不允许在外部获取到self_，以免对其做加减操作没有取模约束
-		int cur() const { return (self_ - container_->arr_)&(container_->capacity_ - 1); }
-	public:
-		typedef std::random_access_iterator_tag iterator_category;
-		typedef K value_type;
-		typedef int difference_type;
-		typedef const K *pointer;
-		typedef const K &reference;
-		friend Deque;
-		friend iterator;
-		const_iterator() : self_(nullptr), container_(nullptr) {}
-		const_iterator(pointer self, Deque *container) :self_(self), container_(container) {}
-		const_iterator(const iterator& it) :self_(it.self_), container_(it.container_) {}
-		reference operator*() const { return *self_; }
-		pointer operator->() const { return self_; }
-		const_iterator &operator+=(int offset)
-		{
-			const int oldoffset = self_ - container_->beg_;
-			self_ = container_->beg_ + ((oldoffset + offset)&(container_->capacity_ - 1));
-			return *this;
-		}
-		const_iterator &operator-=(int offset) { operator+=(-offset); return *this; }
-		const_iterator &operator++() { return operator+=(1), *this; }
-		const_iterator operator++(int) { const_iterator tmp = *this; operator+=(1); return tmp; }
-		const_iterator &operator--() { return operator+=(-1), *this; }
-		const_iterator operator--(int) { const_iterator tmp = *this; operator+=(-1); return tmp; }
-		const_iterator operator+(int offset) const { const_iterator tmp = *this; tmp += offset; return tmp; }
-		const_iterator operator-(int offset) const { const_iterator tmp = *this; return tmp += -offset; }
-		int operator-(const const_iterator &rhs) const
-		{
-			return ((self_ - rhs.self_) & (container_->capacity_ - 1)) * (*this < rhs ? -1 : 1);
-		}
-		bool operator!=(const const_iterator &rhs) const { return self_ != rhs.self_; }
-		bool operator==(const const_iterator &rhs) const { return self_ == rhs.self_; }
-		bool operator<(const const_iterator &rhs) const
-		{
-			const pointer arr = container_->arr_;
-			const bool l1 = self_ < arr, l2 = rhs.self_ < arr;
-			if (l1 && !l2) return false; if (!l1 && l2) return true;
-			return self_ < rhs.self_;
-		}
-		bool operator>(const const_iterator &rhs) const { return !*this < rhs && *this == rhs; }
-		bool operator<=(const const_iterator &rhs) const { return *this < rhs || *this == rhs; }
-		bool operator>=(const const_iterator &rhs) const { return !(*this < rhs); }
-		const_reference operator[](int i) const { return *(*this + i); }
+		public:
+			typedef std::random_access_iterator_tag iterator_category;
+			typedef T value_type;
+			typedef int difference_type;
+			typedef T *pointer;
+			typedef T &reference;
+			typedef const T &const_reference;
+			typedef const T *const_pointer;
+		private:
+			Block *which;
+			int where;
+		public:
+			iterator(Block *which, int where) :which(which), where(where) {}
+			T &operator*() { return (*which)[where]; }
+			T *operator->() { return (*which) + where; }
+			iterator &operator+=(int shift)
+			{
+				which += (where + shift) / BlockSize;
+				where = (where + shift) % BlockSize;
+				return *this;
+			}
+			iterator operator+(int shift) const { iterator ret(*this); return ret += shift; }
+			iterator &operator-=(int shift)
+			{
+				which += (where - shift) / BlockSize;
+				where = (where - shift) % BlockSize;
+				if (where < 0) where += BlockSize, --which;
+				return *this;
+			}
+			iterator operator-(int shift) const { iterator ret(*this); return ret -= shift; }
+			int operator-(iterator rhs) const { return where - rhs.where + BlockSize * (which - rhs.which); }
+			iterator &operator++()
+			{
+				if (where == BlockSize - 1)
+					++which, where = 0;
+				else
+					++where;
+				return *this;
+			}
+			iterator &operator--()
+			{
+				if (where == 0)
+					--which, where = BlockSize - 1;
+				else
+					--where;
+				return *this;
+			}
+			iterator operator++(int) { iterator ret(*this); ++*this; return ret; }
+			iterator operator--(int) { iterator ret(*this); --*this; return ret; }
+			bool operator<(iterator rhs) const { return which != rhs.which ? which < rhs.which : where < rhs.where; }
+			bool operator>(iterator rhs) const { return which != rhs.which ? which > rhs.which : where > rhs.where; }
+			bool operator<=(iterator rhs) const { return *this - rhs <= 0; }
+			bool operator>=(iterator rhs) const { return *this - rhs >= 0; }
+			bool operator==(iterator rhs) const { return where == rhs.where && which == rhs.which; }
+			bool operator!=(iterator rhs) const { return where != rhs.where || which != rhs.which; }
+		};
+		iterator begin() { return iterator(blocks + firstBlock, head); }
+		//直接传tail，tail可能为BlockSize，但是正常的迭代器不可能是BlockSize，从而永远不等
+		iterator end() { return ++iterator(blocks + lastBlock, tail - 1); }
 	};
 }
-

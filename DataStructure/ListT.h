@@ -51,13 +51,16 @@ namespace ds
 		const static int value = Where;
 	};
 
+	namespace outimpl
+	{
+		//之所以把它放在外面，是为了使编译器输出更简洁一点
+		template <typename T,int Index, T Value>
+		struct Impl; //利用编译器的错误信息来输出
+	}
 	template <typename List, int Cur = 0, bool Null = IsNull<List>::value>
 	struct Output
 	{
-		using T = typename List::ValueType;
-		template <int Index, T Value>
-		struct Outputer; //利用编译器的错误信息来输出
-		Outputer<Cur, List::value> impl{}; //貌似不加大括号强制初始化的话，输出的顺序就会乱，不知道为什么
+		outimpl::Impl<typename List::ValueType,Cur, List::value> impl{}; //貌似不加大括号强制初始化的话，输出的顺序就会乱，不知道为什么
 		Output<typename List::Next, Cur + 1> next;
 	};
 	template <typename List, int Cur>

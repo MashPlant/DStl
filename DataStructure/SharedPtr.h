@@ -5,11 +5,14 @@
 namespace ds
 {
 	//侵入式的智能指针
-	//需要多继承请自觉开virtual
-	struct EnableShared
+	//只要使用它的类包含一个 _cnt_ 成员并且保证不修改它即可
+	namespace detail
 	{
-		int _cnt_ = 1;
-	};
+		template <typename T,typename = decltype(std::declval<T>()._cnt_)>
+		constexpr bool hasCnt(int) { return true; }
+		template <typename T>
+		constexpr bool hasCnt(float) { return true; }
+	}
 
 	struct DefaultDelete
 	{
@@ -31,24 +34,22 @@ namespace ds
 		}
 	};
 	//没有stl那么多顾虑
-	//每个SharedPtr配一个deleter太浪费了，不支持
+	//每个SharedPtr配一个Del太浪费了，不支持
 	template <typename K,typename Delete = DefaultDelete>
 	class SharedPtr
 	{
-		static_assert(std::is_base_of<EnableShared, K>::value,
-			"K must derive from EnableShared");
+		static_assert(detail::hasCnt<K>(0), "K must has field _cnt_");
 		static_assert(std::is_class<Delete>::value,
-			"SharedPtr only support struct with operator() as its deleter\nfunction and lambda are not accepted");
-	private:
+			"SharedPtr only support struct with operator() as its deleter \n function and lambda are not accepted");
 		K *ptr;
-		const static Delete deleter;
+		const static Delete Del;
 		void tryDel()
 		{
 			if (ptr && --(ptr->_cnt_) == 0)
-				deleter(ptr);
+				Del(ptr);
 		}
 	public:
-		SharedPtr(K *ptr = nullptr) :ptr(ptr) {}
+		SharedPtr(K *ptr = nullptr) :ptr(ptr) { if (ptr) ptr->_cnt_ = 1; }
 		template <typename U, typename = typename std::enable_if<std::is_base_of<K, U>::value>::type>
 		SharedPtr(const SharedPtr<U, Delete> &rhs)
 		{
@@ -88,7 +89,7 @@ namespace ds
 		~SharedPtr() { tryDel(); }
 	};
 	template <typename K, typename Delete>
-	const Delete SharedPtr<K, Delete>::deleter = Delete();
+	const Delete SharedPtr<K, Delete>::Del = Delete();
 
 	template<typename K, typename Delete = DefaultDelete, typename ...Args>
 	SharedPtr<K, Delete> makeShared(Args&& ...args)

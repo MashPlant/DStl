@@ -31,9 +31,6 @@
     <Filter Include="头文件\Memory">
       <UniqueIdentifier>{dc602a51-74e1-42a6-b929-344538c3d71f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Profiler">
-      <UniqueIdentifier>{dc57ee6e-635b-4c94-b2c4-14d74246bc48}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\Map">
       <UniqueIdentifier>{b17fa315-0fb8-46aa-901c-8ad8fb624ea6}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,12 @@
     </Filter>
     <Filter Include="头文件\TMP">
       <UniqueIdentifier>{caf89899-e2fe-46a1-a8a8-c6cbbdca9cdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Other\Profiler">
+      <UniqueIdentifier>{dc57ee6e-635b-4c94-b2c4-14d74246bc48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Math">
+      <UniqueIdentifier>{a3b67fd0-89bd-4d83-aa92-39dfc96e3736}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -145,13 +148,13 @@
       <Filter>头文件\Query</Filter>
     </ClInclude>
     <ClInclude Include="Matrix.h">
-      <Filter>头文件\Profiler</Filter>
+      <Filter>头文件\Other\Profiler</Filter>
     </ClInclude>
     <ClInclude Include="Complexity.h">
-      <Filter>头文件\Profiler</Filter>
+      <Filter>头文件\Other\Profiler</Filter>
     </ClInclude>
     <ClInclude Include="Profiler.h">
-      <Filter>头文件\Profiler</Filter>
+      <Filter>头文件\Other\Profiler</Filter>
     </ClInclude>
     <ClInclude Include="KDTree.h">
       <Filter>头文件\Query</Filter>
@@ -162,16 +165,10 @@
     <ClInclude Include="List.h">
       <Filter>头文件\LinearContainer</Filter>
     </ClInclude>
-    <ClInclude Include="Stack.h">
-      <Filter>头文件\LinearContainer</Filter>
-    </ClInclude>
     <ClInclude Include="String.h">
       <Filter>头文件\LinearContainer</Filter>
     </ClInclude>
     <ClInclude Include="Vector.h">
-      <Filter>头文件\LinearContainer</Filter>
-    </ClInclude>
-    <ClInclude Include="Deque.h">
       <Filter>头文件\LinearContainer</Filter>
     </ClInclude>
     <ClInclude Include="HashMap.h">
@@ -186,9 +183,6 @@
     <ClInclude Include="ForwardList.h">
       <Filter>头文件\LinearContainer</Filter>
     </ClInclude>
-    <ClInclude Include="Polynomial.h">
-      <Filter>头文件\Other</Filter>
-    </ClInclude>
     <ClInclude Include="PersistentArray.h">
       <Filter>头文件\Query</Filter>
     </ClInclude>
@@ -198,9 +192,6 @@
     <ClInclude Include="PersistentTreap.h">
       <Filter>头文件\Query</Filter>
     </ClInclude>
-    <ClInclude Include="Calculator.h">
-      <Filter>头文件\Other</Filter>
-    </ClInclude>
     <ClInclude Include="ListT.h">
       <Filter>头文件\TMP</Filter>
     </ClInclude>
@@ -209,6 +200,42 @@
     </ClInclude>
     <ClInclude Include="SetT.h">
       <Filter>头文件\TMP</Filter>
+    </ClInclude>
+    <ClInclude Include="ArrayT.h">
+      <Filter>头文件\TMP</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeName.h">
+      <Filter>头文件\TMP</Filter>
+    </ClInclude>
+    <ClInclude Include="BitSet.h">
+      <Filter>头文件\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="IterTool.h">
+      <Filter>头文件\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Calculator.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Polynomial.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="BigInt.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="UInt.h">
+      <Filter>头文件\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="CircularQueue.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="Deque.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="BufArray.h">
+      <Filter>头文件\LinearContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="RefWrapper.h">
+      <Filter>头文件\Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -240,7 +267,7 @@
       <Filter>头文件\Memory</Filter>
     </ClCompile>
     <ClCompile Include="顺序容器三连.cpp">
-      <Filter>头文件\LinearContainer</Filter>
+      <Filter>头文件\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -37,7 +37,7 @@ namespace ds
 		{
 			return 0;
 		}
-		template <int N = 1, int C = reader(0, flag<256>())> //只支持256个状态
+		template <int N = 1, int C = reader(0, flag<64>())> //只支持64个状态
 		int constexpr next(int R = writer<C + N>::value)
 		{
 			return R;

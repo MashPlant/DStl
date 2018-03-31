@@ -86,21 +86,21 @@ namespace ds
 	void fixHeap_(Iter first, Comp comp, int where, int heapSize)//有且仅有where及其孩子违反堆性质，修复之
 	{
 		int nxt = (where << 1) + 1;
-		auto value = std::move(first[where]);
+		auto value = std::move(*(first + where));
 		while (nxt < heapSize)
 		{
-			if (nxt + 1 < heapSize && comp(first[nxt], first[nxt + 1]))
+			if (nxt + 1 < heapSize && comp(*(first + nxt), *(first + nxt + 1)))
 				++nxt;
-			if (comp(value, first[nxt]))
+			if (comp(value, *(first + nxt)))
 			{
-				first[where] = first[nxt];
+				*(first + where) = *(first + nxt);
 				where = nxt;
 				nxt = (where << 1) + 1;;
 			}
 			else
 				break;
 		}
-		first[where] = value;
+		*(first + where) = value;
 	}
 	template<typename Iter, typename Comp>
 	void push_heap(Iter first, Iter last, Comp comp) //[first,last-1)为合法堆,push的新值是last-1
@@ -131,7 +131,7 @@ namespace ds
 			fixHeap_(first, comp, i, heapSize);
 		while (heapSize)
 		{
-			std::swap(first[0], first[--heapSize]);
+			std::swap(*first, *(first + --heapSize));
 			fixHeap_(first, comp, 0, heapSize);
 		}
 	}
@@ -200,7 +200,7 @@ namespace ds
 	template <typename Iter, typename Comp>
 	void insertSort(Iter first, Iter last, Comp comp)
 	{
-		Iter cur = first;
+		Iter cur = first + 1;
 		while (cur != last)
 		{
 			Iter tmp = cur++;
@@ -424,32 +424,6 @@ namespace ds
 	bool next_permutation(Iter first, Iter last)
 	{
 		return ds::next_permutation(first, last, std::less<typename std::iterator_traits<Iter>::value_type>());
-	}
-
-	inline int kmp(const std::string &str, const std::string &pat)
-	{
-		//build next
-		int *next = new int[pat.size()];	//next[i]:=pat[0...i]的最长公共前/后缀(既是前缀也是后缀)
-		next[0] = 0;
-		int pos = 1, k = 0;
-		for (; pos<pat.size(); ++pos)
-		{
-			while (k && pat[k] != pat[pos]) //如pat[k]==pat[pos]，即证明[0...k]与[pos-k+1...pos]完全相同
-				k = next[k - 1];
-			if (pat[pos] == pat[k]) ++k; //可能是因为k==0跳出循环，所以还要判一下
-			next[pos] = k;
-		}
-		for (pos = k = 0; pos < str.size(); ++pos)
-		{
-			while (k && str[pos] != pat[k])
-				k = next[k - 1];//匹配就很简单，k和pos各+1；不匹配？k需要向前移动才可能匹配；
-								//因为最后一位已经失配，必然要用到前k-1个，假设存在一个(next[k-1],k)间的位置x能够使pat[0,x]和str[pos-k,pos-k+x]完全匹配，那么next[k-1]就应该=x+1，矛盾
-			if (str[pos] == pat[k]) ++k;
-			if (k == pat.size())
-				break;
-		}
-		delete[]next;
-		return k == pat.size() ? pos - k + 1 : -1;
 	}
 
 	template<typename K>
