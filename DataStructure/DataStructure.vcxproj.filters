@@ -19,9 +19,6 @@
     <Filter Include="头文件\Algorithm">
       <UniqueIdentifier>{0209b2f8-5781-4830-abff-08dc7d565c1f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件\Test">
-      <UniqueIdentifier>{5652be9d-9ac1-4065-b092-777ccd0d9566}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\Heap">
       <UniqueIdentifier>{5eb50dc3-6da2-439f-b4ff-78452652dacd}</UniqueIdentifier>
     </Filter>
@@ -237,6 +234,24 @@
     <ClInclude Include="RefWrapper.h">
       <Filter>头文件\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="MinMaxHeap.h">
+      <Filter>头文件\Heap</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>头文件\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="SIUnit.h">
+      <Filter>头文件\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicSegTree.h">
+      <Filter>头文件\Query</Filter>
+    </ClInclude>
+    <ClInclude Include="fc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="RBTreeWithoutSize.h">
+      <Filter>头文件\Map\Tree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -245,29 +260,8 @@
     <ClCompile Include="DataStructure.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="LuoguP3377LeftistTree.cpp">
-      <Filter>头文件\Heap</Filter>
-    </ClCompile>
-    <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp">
-      <Filter>头文件\Heap</Filter>
-    </ClCompile>
-    <ClCompile Include="堆三连.cpp">
-      <Filter>头文件\Test</Filter>
-    </ClCompile>
-    <ClCompile Include="排序四连.cpp">
-      <Filter>头文件\Test</Filter>
-    </ClCompile>
     <ClCompile Include="对拍.cpp">
       <Filter>头文件\Map\对拍</Filter>
-    </ClCompile>
-    <ClCompile Include="Mapn连.cpp">
-      <Filter>头文件\Test</Filter>
-    </ClCompile>
-    <ClCompile Include="TestMemPool.cpp">
-      <Filter>头文件\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="顺序容器三连.cpp">
-      <Filter>头文件\Test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

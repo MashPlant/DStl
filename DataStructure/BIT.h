@@ -17,7 +17,6 @@ namespace ds
 	template <int N>
 	class BIT
 	{
-	private:
 		int arr[N + 1] = { 0 };
 		struct Reference
 		{

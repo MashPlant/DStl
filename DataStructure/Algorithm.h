@@ -2,6 +2,9 @@
 #include <functional>
 #include <ratio>
 #include <string>
+#include <cstdlib>
+#include <cstring>
+
 namespace ds
 {
 	template<typename Iter>
@@ -305,7 +308,7 @@ namespace ds
 		const Iter mid = first + (last - first) / 2;
 		value_type *aux = new value_type[last - first];
 		ds::merge_sort_impl_<Iter, Comp>(first, mid, comp, aux);
-		ds::merge_sort_impl_<Iter, Comp>(first, mid, last, comp, aux);
+		ds::merge_sort_impl_<Iter, Comp>(mid, last, comp, aux);
 		ds::merge(first, mid, last, comp, aux);
 		delete[]aux;
 	}

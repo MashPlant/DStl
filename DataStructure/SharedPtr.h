@@ -1,6 +1,6 @@
 #pragma once
 #include <type_traits>
-#include <cassert>
+#include <iostream>
 
 namespace ds
 {
@@ -36,7 +36,7 @@ namespace ds
 	//没有stl那么多顾虑
 	//每个SharedPtr配一个Del太浪费了，不支持
 	template <typename K,typename Delete = DefaultDelete>
-	class SharedPtr
+	struct SharedPtr
 	{
 		static_assert(detail::hasCnt<K>(0), "K must has field _cnt_");
 		static_assert(std::is_class<Delete>::value,
@@ -47,31 +47,40 @@ namespace ds
 		{
 			if (ptr && --(ptr->_cnt_) == 0)
 				Del(ptr);
-		}
-	public:
-		SharedPtr(K *ptr = nullptr) :ptr(ptr) { if (ptr) ptr->_cnt_ = 1; }
-		template <typename U, typename = typename std::enable_if<std::is_base_of<K, U>::value>::type>
-		SharedPtr(const SharedPtr<U, Delete> &rhs)
+		}	
+		//下面用模板写了拷贝构造/拷贝赋值
+		//但是这 不会 覆盖掉编译器合成的构造/拷贝赋值
+		//从而编译器合成的函数比模板函数的优先级更高，执行了合成的版本，导致错误
+		//所以必须显式提供这两个函数(移动构造/赋值则不需要，因为此时编译器不会合成它们)
+		SharedPtr(const SharedPtr &rhs) { ++(ptr = rhs.ptr)->_cnt_; }
+		SharedPtr &operator=(const SharedPtr &rhs)
 		{
+			++rhs.ptr->_cnt_; 
+			tryDel();
 			ptr = rhs.ptr;
-			++ptr->_cnt_;
-		}
-		template <typename U, typename = typename std::enable_if<std::is_base_of<K, U>::value>::type>
-		SharedPtr &operator=(const SharedPtr<U, Delete> &rhs)
-		{
-			if (this != &rhs)
-			{
-				tryDel();
-				ptr = rhs.get();
-				++ptr->_cnt_;
-			}
 			return *this;
 		}
-		template <typename U, typename = typename std::enable_if<std::is_base_of<K, U>::value>::type>
-		SharedPtr(SharedPtr<U, Delete> &&rhs)
+		SharedPtr(K *ptr = nullptr) :ptr(ptr) { if (ptr) ptr->_cnt_ = 1; }
+		template <typename U>
+		void swap(SharedPtr<U, Delete> &rhs) noexcept { std::swap(ptr, rhs.ptr); }
+		template <typename U>
+		SharedPtr(const SharedPtr<U, Delete> &rhs) { ++(ptr = rhs.ptr)->_cnt_; }
+		template <typename U>
+		SharedPtr &operator=(const SharedPtr<U, Delete> &rhs)
 		{
-			ptr = rhs.get();
-			rhs.ptr = nullptr;
+			++rhs.ptr->_cnt_; //先+再-，无需判断自赋值
+			tryDel();
+			ptr = rhs.ptr;
+			return *this;
+		}
+		template <typename U>
+		SharedPtr(SharedPtr<U, Delete> &&rhs) noexcept { ptr = rhs.ptr, rhs.ptr = nullptr; }
+		template <typename U>
+		SharedPtr& operator=(SharedPtr<U, Delete> &&rhs) noexcept
+		{	
+			SharedPtr<U, Delete> tmp(std::move(rhs));
+			swap(tmp);
+			return *this;
 		}
 
 		//注意区分const sharedptr 与 sharedptr<const> 
@@ -80,17 +89,14 @@ namespace ds
 		K &operator*() const { return *ptr; }
 		K *operator->() { return ptr; }
 		K *operator->() const { return ptr; }
-		K *get() { return ptr; }
 		K *get() const { return ptr; }
-		K *release() { tryDel(); return ptr; }
 		void reset(K *ptr = nullptr) { tryDel(); this->ptr = ptr; }
 		explicit operator bool() const { return ptr != nullptr; }
 		K &operator[](int x) { return ptr[x]; } //stl没有提供这个
 		~SharedPtr() { tryDel(); }
 	};
-	template <typename K, typename Delete>
-	const Delete SharedPtr<K, Delete>::Del = Delete();
-
+	template <typename K,typename Delete>
+	const Delete SharedPtr<K, Delete>::Del{};
 	template<typename K, typename Delete = DefaultDelete, typename ...Args>
 	SharedPtr<K, Delete> makeShared(Args&& ...args)
 	{

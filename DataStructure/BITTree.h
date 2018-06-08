@@ -12,57 +12,57 @@ namespace ds
 	{
 		//所有函数的参数需自觉保证合法
 		//应该不会有人故意传个负数进来吧(滑稽)
-		BITTree(int n = N) :BIT(n) {}
-		int count(int x) const { return query(x, x); }
+		BITTree(int n = N) :BIT<N>(n) {}
+		int count(int x) const { return BIT<N>::query(x, x); }
 		bool exist(int x) const { return count(x); }
 		void insert(int x)
 		{
 			if (Multi || !count(x))
-				add(x, 1);
+				BIT<N>::add(x, 1);
 		}
 		void erase(int x)
 		{
 			//Multi情况的erase是不明确的
 			//比如说stl会整个抹掉，但是很多题目都要求只去掉一个
 			if (count(x))
-				add(x, -1);
+				BIT<N>::add(x, -1);
 		}
 		int findNext(int x) const //lg^2
 		{
-			int base = sum(x);
-			if (sum(n) == base)
+			int base = BIT<N>::sum(x);
+			if (BIT<N>::sum(BIT<N>::n) == base)
 				return -1;
-			return ds::bisearch(x + 1, n + 1,
-				[=](int pos) {return sum(pos) > base; });
+			return ds::bisearch(x + 1, BIT<N>::n + 1,
+				[=](int pos) {return BIT<N>::sum(pos) > base; });
 			//这里会找到第一个[x+1,pos]间的和不为0的pos，于是的到后继
 		}
 		int findPrev(int x) const
 		{
-			int base = sum(x - 1);
+			int base = BIT<N>::sum(x - 1);
 			if (base == 0)
 				return -1;
 			return ds::bisearch(1, x,
-				[=](int pos) {return sum(pos) == base; });
+				[=](int pos) {return BIT<N>::sum(pos) == base; });
 			//返回第一个[1,pos]的和=[1,x-1]的和的pos
 			//这样pos就是"引起最后一次改变"的位置，即前驱
 		}
 		int findMin() const { return findNext(0); }
 		int findMax() const
 		{
-			if (exist(n))
-				return n;
-			return findPrev(n);
+			if (exist(BIT<N>::n))
+				return BIT<N>::n;
+			return findPrev(BIT<N>::n);
 		}
 		int kth(int k) const
 		{
 			if (k > size() || k < 1)
 				return -1;
-			return ds::bisearch(1, n + 1
-				, [=](int pos) {return sum(pos) >= k; });
+			return ds::bisearch(1, BIT<N>::n + 1
+				, [=](int pos) {return BIT<N>::sum(pos) >= k; });
 		}
 		//不要求x存在
-		int rank(int x) const { return sum(x - 1) + 1; }
+		int rank(int x) const { return BIT<N>::sum(x - 1) + 1; }
 		//求size需要lgN时间，最好保存下来
-		int size() const { return sum(n); }
+		int size() const { return BIT<N>::sum(BIT<N>::n); }
 	};
 }

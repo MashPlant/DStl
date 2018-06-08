@@ -1,21 +1,10 @@
 #pragma once
 #include "List.h"
-#include <allocators>
+#include <memory>
+#include <limits>
+
 namespace ds
 {
-	//利用模板实现nega inf
-	template <typename Num>
-	struct NumericTraits
-	{
-		const static Num NegaInf;
-	};
-
-	template <>
-	struct NumericTraits<int> //理论上需要补全基础类型的定义
-	{
-		const static int NegaInf = 1 << 31;
-	};
-
 	//我实在懒得定义类型了....反正斐波那契堆也不需要和标准库交互
 	//注意template template parameter的语法,默认模板参数被忽略，必须手动指出
 	//保证内存泄漏，没有拷贝控制，谁爱用谁用
@@ -61,7 +50,7 @@ namespace ds
 		}
 		void delNode(Node *x)
 		{
-			decreaseKey(x, NumericTraits<K>::NegaInf);
+			decreaseKey(x, std::numeric_limits<K>::min());
 			pop();
 		}
 		const K &top() const { return min->getKey(); }

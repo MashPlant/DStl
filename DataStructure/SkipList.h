@@ -120,7 +120,7 @@ namespace ds
 	class SkipListMap : public SkipList<SkipListMapTraits<K, V, Comp>>
 	{
 	public:
-		SkipListMap(Comp comp = Comp()) :SkipList(comp) {}
+		SkipListMap(Comp comp = Comp()) :SkipList<SkipListMapTraits<K, V, Comp>>(comp) {}
 	};
 	template<typename K, typename Comp>
 	struct SkipListSetTraits
@@ -134,6 +134,6 @@ namespace ds
 	class SkipListSet : public SkipList<SkipListSetTraits<K, Comp>>
 	{
 	public:
-		SkipListSet(Comp comp = Comp()) :SkipList(comp) {}
+		SkipListSet(Comp comp = Comp()) :SkipList<SkipListSetTraits<K, Comp>>(comp) {}
 	};
 }

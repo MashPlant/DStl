@@ -32,7 +32,7 @@ namespace ds
 			}
 		};
 		Node *root = nullptr;
-		std::function<bool(const value_type &lhs, const K&rhs)> pairComp = [](const value_type &lhs, const K&rhs) {return lhs.first < rhs; };
+		static bool pairComp(const value_type &lhs, const K&rhs) { return lhs.first < rhs; }
 		template <typename T>
 		static void shiftBy(T *ptr, int length, int shift)
 		{

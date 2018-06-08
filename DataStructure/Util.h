@@ -49,7 +49,7 @@ namespace ds
 	
 	inline uint32_t rawRani()
 	{
-		static unsigned seed = static_cast<unsigned>(time(nullptr));
+		static unsigned seed = 19260817;// static_cast<unsigned>(time(nullptr));
 		auto xorshift32 = [&]()->uint32_t 
 		{ 	
 			/* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */ 	

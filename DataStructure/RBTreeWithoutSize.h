@@ -3,11 +3,8 @@
 #include <utility>
 namespace ds
 {
-	//可能有点过度设计吧
-	//不需要与stl交互，所以就全部驼峰式命名
-	//不是给人继承的(MS实现)，而是给人用的(SGI STL实现)
 	template <typename Traits>
-	class RBTree
+	class RBTreeWithoutSize
 	{
 	private:
 		typedef typename Traits::KeyType KeyType;
@@ -18,7 +15,6 @@ namespace ds
 		struct Node
 		{
 			ValueType value;
-			int size = 0;
 			Node *left = nullptr;
 			Node *right = nullptr;
 			Node *p = nullptr;
@@ -27,7 +23,7 @@ namespace ds
 			ValueType *operator->() { return &(operator*()); }
 			const KeyType& key() { return Traits::KeyOf(value); }
 			Node() = default;
-			Node(Node* p, Node* l, Node* r, bool c, const ValueType &v) :value(v), size(1), left(l), right(r), p(p), color(c) { }
+			Node(Node* p, Node* l, Node* r, bool c, const ValueType &v) :value(v), left(l), right(r), p(p), color(c) { }
 		};
 	public:
 		typedef Node* LinkType;
@@ -36,6 +32,7 @@ namespace ds
 		KeyCompare comp;
 		Node* nil_;
 		Node* root_;
+		int size_ = 0;
 		void rotataRight(Node *x)
 		{
 			Node* y = x->left;
@@ -53,8 +50,6 @@ namespace ds
 			}
 			y->right = x;
 			x->p = y;
-			y->size = x->size;
-			x->size = x->left->size + x->right->size + 1;
 		}
 		void rotataLeft(Node *x)
 		{
@@ -73,8 +68,6 @@ namespace ds
 			}
 			y->left = x;
 			x->p = y;
-			y->size = x->size;
-			x->size = x->left->size + x->right->size + 1;
 		}
 		void putFixUp(Node *z)
 		{
@@ -222,13 +215,11 @@ namespace ds
 			if (sour->left != sournil_)
 			{
 				dest->left = new Node(dest, nil_, nil_, sour->left->color, ValueType(sour->left->value));
-				dest->left->size = sour->left->size;
 				cpy(dest->left, sour->left, sournil_);
 			}
 			if (sour->right != sournil_)
 			{
 				dest->right = new Node(dest, nil_, nil_, sour->right->color, ValueType(sour->right->value));
-				dest->right->size = sour->right->size;
 				cpy(dest->right, sour->right, sournil_);
 			}
 		}
@@ -246,6 +237,7 @@ namespace ds
 		}
 		Node* insert(Node *p, const ValueType& value)
 		{
+			++size_;
 			Node *z = new Node(p, nil_, nil_, R, value);
 			if (p == nil_)
 				root_ = z;
@@ -256,8 +248,6 @@ namespace ds
 				else
 					p->left = z;
 			}
-			while (p != nil_)
-				++p->size, p = p->p;
 			putFixUp(z);
 			return z;
 		}
@@ -293,39 +283,6 @@ namespace ds
 			}
 			return { nullptr,p };
 		}
-		int lower(const KeyType &rend, bool afterEqual) const
-		{
-			Node *x = root_;
-			int cnt = 0;
-			while (x != nil_)
-			{
-				if (comp(x->key() , rend) || (afterEqual && !comp(rend , x->key())))
-				{
-					cnt += x->left->size + 1;
-					x = x->right;
-				}
-				else
-					x = x->left;
-			}
-			return cnt;
-		}
-		Node * kth(int k) //k>size() or k<1时自动返回end()
-		{
-			Node *x = root_;
-			while (x != nil_)
-			{
-				if (x->left->size + 1 == k)
-					return x;
-				if (x->left->size + 1 < k)
-				{
-					k -= x->left->size + 1;
-					x = x->right;
-				}
-				else
-					x = x->left;
-			}
-			return nil_;
-		}
 		Node* insert(const ValueType &value)
 		{
 			NodePair np = findNode(Traits::KeyOf(value));
@@ -335,9 +292,7 @@ namespace ds
 		}
 		void erase(Node *z)
 		{
-			Node *tmp = z;
-			while (tmp != nil_)
-				--tmp->size, tmp = tmp->p;
+			--size_;
 			Node *y = z, *x;
 			bool oldColor = y->color;
 			if (z->left == nil_)
@@ -359,12 +314,6 @@ namespace ds
 					x->p = y;
 				else
 				{
-					Node *tempy = y;
-					while (tempy != z)
-					{
-						--tempy->size;
-						tempy = tempy->p;
-					}
 					transplant(y, y->right);
 					y->right = z->right;
 					y->right->p = y;
@@ -372,7 +321,6 @@ namespace ds
 				transplant(z, y);
 				y->left = z->left, y->left->p = y;
 				y->color = z->color;
-				y->size = y->left->size + y->right->size + 1;
 			}
 			delete z;
 			if (oldColor == B)
@@ -381,20 +329,22 @@ namespace ds
 		Node * nil() { return nil_; }
 		Node * minChild() const { return minChild(root_); }
 		Node * maxChild() const { return maxChild(root_); }
-		int size()const { return root_->size; }
-		void swap(RBTree &rhs) noexcept
+		int size()const { return size_; }
+		void swap(RBTreeWithoutSize &rhs) noexcept
 		{
 			std::swap(root_, rhs.root_);
 			std::swap(nil_, rhs.nil_);
+			std::swap(size_, rhs.size_);
 		}
-		RBTree(KeyCompare comp = KeyCompare()):comp(comp),nil_(new Node)
+		RBTreeWithoutSize(KeyCompare comp = KeyCompare()) :comp(comp), nil_(new Node)
 		{
 			root_ = nil_;
 			root_->p = root_->left = root_->right = nil_;
 		}
-		RBTree(const RBTree&rhs) 
+		RBTreeWithoutSize(const RBTreeWithoutSize&rhs)
 		{
 			nil_ = new Node;
+			size_ = rhs.size_;
 			if (rhs.root_ == rhs.nil_)
 			{
 				root_ = nil_;
@@ -403,40 +353,38 @@ namespace ds
 			else
 			{
 				root_ = new Node(nil_, nil_, nil_, rhs.root_->color, ValueType(rhs.root_->value));
-				root_->size = rhs.root_->size;
 				cpy(root_, rhs.root_, rhs.nil_);
 			}
 		}
-		RBTree& operator=(const RBTree &rhs)
+		RBTreeWithoutSize& operator=(const RBTreeWithoutSize &rhs)
 		{
 			if (this != &rhs)
 			{
-				RBTree tmp(rhs);
+				RBTreeWithoutSize tmp(rhs);
 				swap(tmp);
 			}
 			return *this;
 		}
-		RBTree(RBTree &&rhs) noexcept
+		RBTreeWithoutSize(RBTreeWithoutSize &&rhs) noexcept
 		{
 			if (this != &rhs)
 			{
 				nil_ = rhs.nil_;
 				root_ = rhs.root_;
+				size_ = rhs.size_;
 				rhs.nil_ = rhs.root_ = nullptr;
 			}
 		}
-		RBTree& operator=(RBTree &&rhs) noexcept
+		RBTreeWithoutSize& operator=(RBTreeWithoutSize &&rhs) noexcept
 		{
 			if (this != &rhs)
 			{
-				~RBTree();
-				nil_ = rhs.nil_;
-				root_ = rhs.root_;
-				rhs.nil_ = rhs.root_ = nullptr;
+				RBTreeWithoutSize tmp(std::move(rhs));
+				swap(tmp);
 			}
 			return *this;
 		}
-		~RBTree() 
+		~RBTreeWithoutSize()
 		{
 			clear(root_);
 			delete nil_;

@@ -1,7 +1,5 @@
 #pragma once
-#include <string>
 #include <cstdlib>
-#include <iostream>
 #include <type_traits>
 
 namespace ds
@@ -9,169 +7,164 @@ namespace ds
 	template <typename K>
 	class Vector
 	{
-	public:
-		typedef K value_type;
-		typedef K *iterator;
-		typedef K *pointer;
-		typedef K &reference;
-		typedef const K &const_reference;
-		typedef const K *const_iterator;
-		typedef const K *const_pointer;
-	private:
-		const static int INITIAL_CAP = 8;
-		void realloc(int newCapacity)
+		const static int InitialCap = 8;
+		const static bool NonTrivial = !std::is_trivially_copyable<K>::value || !std::is_trivially_destructible<K>::value;
+		void realloc(int newCap)
 		{
-			/*
-			void *realloc( void *ptr, size_t newsize );
-			a) expanding or contracting the existing area pointed to by ptr,
-			If the area is expanded, the contents of the new part of the array are undefined.
-			b) allocating a new memory block of size newsize bytes,
-			copying memory area with size equal the lesser of the new and the old sizes,
-			and freeing the old block.
-			On failure, returns a null pointer. The original pointer ptr remains valid and may need to be deallocated with std::free()
-			*/
-			arr_ = (pointer)std::realloc(arr_, sizeof(value_type) * newCapacity);
-			capacity_ = newCapacity;
+			//realloc:尝试追加内存；失败则新申请内存并bitwise拷贝
+			arr = (K*)std::realloc(arr, sizeof(K) * newCap);
+			cap = newCap;
 		}
 		void expand()
 		{
-			if (size_ == capacity_)
-				realloc(capacity_ << 1);
+			if (siz == cap)
+				realloc(cap << 1);
 		}
-		void destruct(iterator first, iterator last)
+		static void destruct(K *first, K *last)
 		{
-			if (std::is_class<value_type>::value)
+			if (NonTrivial)
 				for (; first != last; ++first)
 					first->~K();
 		}
-		void destruct(iterator where)
-		{
-			if (std::is_class<value_type>::value)
-			where->~K();
-		}
+		static void destruct(K *pos) { pos->~K(); }
+		template <typename ...Args>
+		static void construct(K *pos, Args &&...args) { new(pos) K(std::forward<Args>(args)...); }
 		static int calc(int len)
 		{
-			int cap = INITIAL_CAP;
+			int cap = InitialCap;
 			for (; cap < len; cap <<= 1);
 			return cap;
 		}
 	protected:
-		pointer arr_ = nullptr;
-		int size_ = 0;
-		int capacity_ = 0;
-		void mov(iterator dest, const_iterator first, const_iterator last) //放弃原来的
+		int siz = 0;
+		int cap = 0;
+		K * arr = nullptr;
+		static void mov(K *dest, const K *first, const K *last) //放弃原来的
 		{
-			memmove(dest, first, (last - first) * sizeof(value_type));
+			memmove(dest, first, (last - first) * sizeof(K));
 		}
-		void cpy(iterator dest, const_iterator first, const_iterator last) //保留原来的
+		static void cpy(K *dest, const K *first, const K *last) //保留原来的
 		{
-			if (std::is_class<value_type>::value)
+			if (NonTrivial)
 				for (; first != last; ++dest, ++first)
-					new (dest) value_type(*first);
+					new(dest) K(*first);
 			else
-				memcpy(dest, first, (last - first) * sizeof(value_type));
+				memcpy(dest, first, (last - first) * sizeof(K));
 		}
 	public:
-		void push_back(const_reference key)
+		void push_back(K key)
 		{
 			expand();
-			new (arr_ + size_++) value_type(key);
+			construct(arr + siz++, std::move(key));
 		}
-		void addAll(const Vector &rhs)
+		void add_all(const Vector &rhs)
 		{
-			reserve(size_ + rhs.size_);
-			cpy(arr_ + size_, rhs.begin(), rhs.end());
-			size_ += rhs.size_;
+			reserve(siz + rhs.siz);
+			cpy(arr + siz, rhs.begin(), rhs.end());
+			siz += rhs.siz;
 		}
-		void pop_back() { destruct(arr_ + --size_); }
+		void resize(int nSize)
+		{
+			if (nSize == siz)
+				return;
+			if (siz < nSize)
+			{
+				reserve(calc(nSize));
+				for (K *cur = arr + siz, *last = arr + nSize; cur != last; ++cur)
+					construct(cur, K());
+			}
+			else
+				destruct(arr + nSize, arr + siz);
+			siz = nSize;
+		}
+		void pop_back() { destruct(arr + --siz); }
 		void erase(int pos, int cnt = 1)
 		{
-			cnt = min(size_ - pos, cnt);
+			cnt = min(siz - pos, cnt);
 			if (!cnt)
 				return;
-			destruct(arr_ + pos, arr_ + pos + cnt);
-			mov(arr_ + pos, arr_ + pos + cnt, arr_ + size_);
-			//注意到，对于类类型会产生size_和size_-1位置两个bit完全一致的版本
-			//但是这并不会有什么问题，因为不可能再对size_位置的对象调用析构函数
-			size_ -= cnt;
+			destruct(arr + pos, arr + pos + cnt);
+			mov(arr + pos, arr + pos + cnt, arr + siz);
+			//注意到，对于类类型会产生siz和siz-1位置两个bit完全一致的版本
+			//但是这并不会有什么问题，因为不可能再对siz位置的对象调用析构函数
+			siz -= cnt;
 		}
-		void insert(int pos, const_reference key) //insert and be there
+		void insert(int pos, K key) //insert and be there
 		{
 			expand();
-			mov(arr_ + pos + 1, arr_ + pos, arr_ + size_);
-			new (arr_ + pos) value_type(key);
+			mov(arr + pos + 1, arr + pos, arr + siz);
+			construct(arr + pos, std::move(key));
 		}
-		void reserve(int nCapacity)
+		void reserve(int nCap)
 		{
-			nCapacity = calc(nCapacity);
-			if (nCapacity > capacity_)
-				realloc(nCapacity);
+			nCap = calc(nCap);
+			if (nCap > cap)
+				realloc(nCap);
 		}
-		iterator begin() { return arr_; }
-		iterator end() { return arr_ + size_; }
-		const_iterator begin() const { return arr_; }
-		const_iterator end() const { return arr_ + size_; }
-		reference front() { return *arr_; }
-		reference back() { return *(arr_ + size_ - 1); }
-		const_reference front() const { return *arr_; }
-		const_reference back() const { return *(arr_ + size_ - 1); }
-		bool empty() const { return size_ == 0; }
-		int size() const { return size_; }
-		int capacity() const { return capacity_; }
-		reference operator[](int pos) { return arr_[pos]; }
-		const_reference operator[](int pos) const { return arr_[pos]; }
-		Vector(int size = 0, int capacity = INITIAL_CAP) : size_(size), capacity_(capacity)
+		K *begin() { return arr; }
+		K *end() { return arr + siz; }
+		const K *begin() const { return arr; }
+		const K *end() const { return arr + siz; }
+		K &front() { return *arr; }
+		K &back() { return *(arr + siz - 1); }
+		const K &front() const { return *arr; }
+		const K &back() const { return *(arr + siz - 1); }
+		bool empty() const { return siz == 0; }
+		int size() const { return siz; }
+		int capacity() const { return cap; }
+		K &operator[](int pos) { return arr[pos]; }
+		const K &operator[](int pos) const { return arr[pos]; }
+		Vector(int size = 0)
+			: siz(size), cap(max(calc(siz),InitialCap)), arr((K *)malloc(cap * sizeof(K)))
 		{
-			arr_ = (pointer)malloc(capacity * sizeof(value_type));
+			for (K *cur = arr, *last = arr + siz; cur != last; ++cur)
+				construct(cur, K());
 		}
 		void swap(Vector &rhs) noexcept
 		{
-			std::swap(arr_, rhs.arr_);
-			std::swap(size_, rhs.size_);
-			std::swap(capacity_, rhs.capacity_);
+			std::swap(arr, rhs.arr);
+			std::swap(siz, rhs.siz);
+			std::swap(cap, rhs.cap);
 		}
 		Vector &operator=(Vector rhs)
 		{
 			swap(*this, rhs);
 			return *this;
 		}
-		Vector(const Vector &rhs) : arr_(nullptr)
+		Vector(const Vector &rhs) : arr(nullptr)
 		{
-			reserve(rhs.size_);
-			size_ = rhs.size_;
-			cpy(arr_, rhs.begin(), rhs.end());
+			reserve(rhs.siz);
+			siz = rhs.siz;
+			cpy(arr, rhs.begin(), rhs.end());
 		}
 		Vector &operator=(Vector &&rhs) noexcept
 		{
 			if (this != &rhs)
 			{
-				~Vector();
-				arr_ = rhs.arr_;
-				capacity_ = rhs.capacity_, size_ = rhs.size_;
-				rhs.arr_ = nullptr;
+				Vector tmp(std::move(rhs));
+				swap(tmp);
 			}
 			return *this;
 		}
 		Vector(Vector &&rhs) noexcept
 		{
-			arr_ = rhs.arr_;
-			capacity_ = rhs.capacity_, size_ = rhs.size_;
-			rhs.arr_ = nullptr;
+			arr = rhs.arr;
+			cap = rhs.cap, siz = rhs.siz;
+			rhs.arr = nullptr;
 		}
-		Vector(const std::initializer_list<value_type> &rhs)
+		Vector(const std::initializer_list<K> &rhs)
 		{
 			reserve(rhs.size());
-			size_ = rhs.size();
-			cpy(arr_, rhs.begin(), rhs.end());
+			siz = rhs.size();
+			cpy(arr, rhs.begin(), rhs.end());
 		}
 		~Vector()
 		{
-			if (arr_)
+			if (arr)
 			{
-				destruct(arr_, arr_ + size_);
-				free(arr_);
+				destruct(arr, arr + siz);
+				free(arr);
 			}
 		}
 	};
-
 }

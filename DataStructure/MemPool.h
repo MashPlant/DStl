@@ -1,12 +1,22 @@
 #pragma once
 #include  <type_traits>
+#ifdef _MSC_VER
+#include <xutility>
+#endif
+
 namespace ds
 {
-	//WARNING!!! 这个内存池能且仅能用于处理单个对象!!!vector什么的别想了
-	//在VS里debug下跑的时候所有迭代器操作都会崩溃，我实在不知道为什么
-	template <typename K, int BlockSize>
+	//这个内存池能且仅能用于处理单个对象
+	template <typename K, int BlockSize = 4096>
 	class MemPool
 	{
+#ifdef _MSC_VER
+		static_assert(!std::is_same<K, std::_Container_proxy>::value,
+			"Fucking MSVC use MemPool on STACK to allocate std::_Container_proxy, which will crash the program"\
+			"There migth be something else like this, I can't guarantee");
+#pragma warning("Don't use it on MSVC")
+#endif
+
 		union Slot
 		{
 			K data;
@@ -73,15 +83,20 @@ namespace ds
 
 		//出于某种我无法理解的原因，微软的编译器会在stl容器的构造函数中利用allocator来构造一个_Container_proxy
 		//而且那个allocator是在函数内创建的，很快就析构了。如果执行析构函数那个proxy就会被释放掉，从而挂掉
-//		~MemPool() 
-//		{
-//			std::cout << typeid(K).name();
-//			while (curBlock)
-//			{
-//				Slot *tmp = curBlock->next;
-//				free(curBlock);
-//				curBlock = tmp;
-//			}
-//		}
+
+		~MemPool() 
+		{
+			while (curBlock)
+			{
+				Slot *nxt = curBlock->next;
+				free(curBlock);
+				curBlock = nxt;
+			}
+		}
 	};
+	template <typename K1, int BlockSize1,typename K2, int BlockSize2>
+	bool operator==(const MemPool<K1, BlockSize1> &, const MemPool<K2, BlockSize2> &) { return true; }
+	template <typename K1, int BlockSize1, typename K2, int BlockSize2>
+	bool operator!=(const MemPool<K1, BlockSize1> &, const MemPool<K2, BlockSize2> &) { return false; }
+
 }

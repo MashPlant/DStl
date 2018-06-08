@@ -3,6 +3,7 @@
 #include <queue>
 #include <utility>
 #include "TreeUtil.h"
+#include "Util.h"
 namespace ds
 {
 	template <typename Traits>

@@ -153,8 +153,14 @@
     <ClInclude Include="Complexity.h" />
     <ClInclude Include="CircularQueue.h" />
     <ClInclude Include="Deque.h" />
+    <ClInclude Include="DynamicSegTree.h" />
+    <ClInclude Include="fc.h" />
     <ClInclude Include="Function.h" />
+    <ClInclude Include="MinMaxHeap.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="RBTreeWithoutSize.h" />
     <ClInclude Include="RefWrapper.h" />
+    <ClInclude Include="SIUnit.h" />
     <ClInclude Include="UInt.h" />
     <ClInclude Include="IterTool.h" />
     <ClInclude Include="ListT.h" />
@@ -200,15 +206,8 @@
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TestMemPool.cpp" />
     <ClCompile Include="对拍.cpp" />
     <ClCompile Include="DataStructure.cpp" />
-    <ClCompile Include="LuoguP3371Dijkstra-FibHeap.cpp" />
-    <ClCompile Include="LuoguP3377LeftistTree.cpp" />
-    <ClCompile Include="Mapn连.cpp" />
-    <ClCompile Include="堆三连.cpp" />
-    <ClCompile Include="排序四连.cpp" />
-    <ClCompile Include="顺序容器三连.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

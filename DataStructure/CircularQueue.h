@@ -96,11 +96,6 @@ namespace ds
 		};
 		class const_iterator
 		{
-		private:
-			pointer self_;
-			CircularQueue *container_;
-			operator pointer() const { return self_; } //不允许在外部获取到self_，以免对其做加减操作没有取模约束
-			int cur() const { return (self_ - container_->arr_)&(container_->capacity_ - 1); }
 		public:
 			typedef std::random_access_iterator_tag iterator_category;
 			typedef K value_type;
@@ -109,6 +104,12 @@ namespace ds
 			typedef const K &reference;
 			friend CircularQueue;
 			friend iterator;
+		private:
+			pointer self_;
+			CircularQueue *container_;
+			operator pointer() const { return self_; } //不允许在外部获取到self_，以免对其做加减操作没有取模约束
+			int cur() const { return (self_ - container_->arr_)&(container_->capacity_ - 1); }
+		public:
 			const_iterator() : self_(nullptr), container_(nullptr) {}
 			const_iterator(pointer self, CircularQueue *container) :self_(self), container_(container) {}
 			const_iterator(const iterator& it) :self_(it.self_), container_(it.container_) {}

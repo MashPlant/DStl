@@ -142,7 +142,7 @@ namespace ds
 		}
 		String() = default;
 		String& operator+=(char c) { return push_back(c), *this; }
-		String& operator+=(const String &rhs) { return addAll(rhs), *this; }
+		String& operator+=(const String &rhs) { return add_all(rhs), *this; }
 		String& operator+=(const char *ptr)
 		{
 			const int len = strlen(ptr);
