@@ -6,10 +6,10 @@
 #include <climits>
 namespace ds
 {
-	template <typename K, int Dimen>
+	template <typename K, typename F, int Dimen>
 	class KDTree
 	{
-		const std::array<std::function<double(const K&)>, Dimen> dimen;
+		const std::array<F, Dimen> dimen;
 		std::vector<K> pts;
 		std::vector<int> split; //必须把每一次分割的维度保存下来才能查询
 		std::vector<int> tags;

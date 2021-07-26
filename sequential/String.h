@@ -137,8 +137,8 @@ namespace ds
 		{
 			const int len = strlen(ptr);
 			reserve(len);
-			cpy(arr_, ptr, ptr + len);
-			size_ = len;
+			cpy(arr, ptr, ptr + len);
+			siz = len;
 		}
 		String() = default;
 		String& operator+=(char c) { return push_back(c), *this; }
@@ -146,9 +146,9 @@ namespace ds
 		String& operator+=(const char *ptr)
 		{
 			const int len = strlen(ptr);
-			reserve(len + size_);
-			cpy(arr_ + size_, ptr, ptr + len);
-			size_ += len;
+			reserve(len + siz);
+			cpy(arr + siz, ptr, ptr + len);
+			siz += len;
 			return *this;
 		}
 		template<typename K>
